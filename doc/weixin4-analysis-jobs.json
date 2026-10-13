@@ -1,0 +1,344 @@
+{
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "analysis_sha256": "b8cc1844a6ef2a092baa06976ffb11195f845e02877a6a0126576112b96fe5fb",
+  "max_pseudocode_chars": 100000,
+  "jobs": {
+    "contact-migration-pass1": {
+      "functions": [
+        {
+          "end_rva": "0xe8d29d",
+          "seed": "Bounded dumpbin call at 0xe89275 immediately after ContactManager logging; shared-object getter using type descriptor/vtable RVA 0x8f8d2d8; compare already-analyzed getter 0x460a40",
+          "start_rva": "0xe8d180"
+        },
+        {
+          "end_rva": "0x26e884b",
+          "seed": "Bounded dumpbin direct call at 0x2fb51b5 immediately before get contact from db timing label; reads this+0x80/0x88/0x90 and calls 0x26e8c70; local batch-query candidate, ABI unresolved",
+          "start_rva": "0x26e8250"
+        },
+        {
+          "end_rva": "0x26e9299",
+          "seed": "Bounded dumpbin direct callee of local query candidate 0x26e8250 at 0x26e8451 and 0x26e85ac; query/result container recovery, ABI unresolved",
+          "start_rva": "0x26e8c70"
+        },
+        {
+          "end_rva": "0x2fb67b3",
+          "seed": "Exact-start raw LEA confirmed by dumpbin at 0x2fb51bb to get contact from db RVA 0x93f9878; SessionManager username-list pipeline with cache/contact/detail/biz DB stages",
+          "start_rva": "0x2fb4520"
+        },
+        {
+          "end_rva": "0x2a3eb54",
+          "seed": "Exact-start raw LEA confirmed by dumpbin at 0x2a3cb19 to READ FROM contact db RVA 0x935b420; reads and merges local hashed/string-keyed containers; full graph semantics unresolved",
+          "start_rva": "0x2a3ba50"
+        },
+        {
+          "end_rva": "0x2a78a11",
+          "seed": "Bounded dumpbin call at 0x2a3cb13 preceding READ FROM contact db label; walks sentinel linked nodes, FNV-1a string keys and hash buckets; probable contact map merge, field meanings unresolved",
+          "start_rva": "0x2a785a0"
+        },
+        {
+          "end_rva": "0x101acb9",
+          "seed": "Bounded dumpbin callee of batch-contact wrapper 0x2e333a0 at 0x2e334a3; confirmed direct calls to CoGetContactListByCgi candidate 0x101b3f0, so not proven read-only local list",
+          "start_rva": "0x1019ce0"
+        },
+        {
+          "end_rva": "0x2e33625",
+          "seed": "Exact-start raw LEA confirmed by dumpbin at 0x2e3340c to batch get contact size:%d; shared getter chain 0x47220->0x36c740->0x460a40->0x1019ce0; linked input to vector<string> candidate",
+          "start_rva": "0x2e333a0"
+        }
+      ]
+    },
+    "contact-migration-pass2": {
+      "functions": [
+        {
+          "end_rva": "0x270c67e",
+          "seed": "Contact result map record conversion/insertion from 26e8250",
+          "start_rva": "0x270c3b0"
+        },
+        {
+          "end_rva": "0x2711778",
+          "seed": "Contact DB row decoder from 26e8c70",
+          "start_rva": "0x27115a0"
+        },
+        {
+          "end_rva": "0x271381e",
+          "seed": "Query output map insertion from 26e8c70",
+          "start_rva": "0x2713540"
+        },
+        {
+          "end_rva": "0x6fb1f8",
+          "seed": "0x460 contact record destructor",
+          "start_rva": "0x6fad10"
+        },
+        {
+          "end_rva": "0xf21235",
+          "seed": "Contact record normalization from 26e8250",
+          "start_rva": "0xf21170"
+        }
+      ]
+    },
+    "contact-migration-pass3": {
+      "functions": [
+        {
+          "end_rva": "0xf2066b",
+          "seed": "Contact WCDB field binding registry initializer (f1fbd0)",
+          "start_rva": "0xf1fbf0"
+        },
+        {
+          "end_rva": "0xf1f5ce",
+          "seed": "Contact record 0x460 constructor",
+          "start_rva": "0xf1f280"
+        },
+        {
+          "end_rva": "0x6fa081",
+          "seed": "Contact record copy constructor",
+          "start_rva": "0x6f9130"
+        }
+      ]
+    },
+    "login-migration-pass1": {
+      "functions": [
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x44135",
+          "record_rva": "0xb9888b8",
+          "seed": "Initializer after root context publication; calls 0x441a0 and service-related setup. Root ctor initializes context+0x68/+0x70 to null.",
+          "start_rva": "0x43fd0"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x44762",
+          "record_rva": "0xb9888dc",
+          "seed": "Called by context initializer 0x43fd0 using initialization data; seek service pointer assignment.",
+          "start_rva": "0x441a0"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x47080",
+          "record_rva": "0xb988b4c",
+          "seed": "Nearby context method selected to trace session/service initialization; semantic role unconfirmed.",
+          "start_rva": "0x46aa0"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x46612",
+          "record_rva": "0xb988a80",
+          "seed": "Root vtable slot+0xa0 and shutdown flow call; seek symmetric service teardown/reset and state evidence.",
+          "start_rva": "0x45e00"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x4f385",
+          "record_rva": "0xb989248",
+          "seed": "Root vtable slot+0x18 delegates via service vtable+0x10; could expose state but currently unconfirmed.",
+          "start_rva": "0x4f300"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x500a6",
+          "record_rva": "0xb989320",
+          "seed": "Root service-wrapper following vtable slot+0x68; seek state operation and service virtual call.",
+          "start_rva": "0x4fff0"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x4fda8",
+          "record_rva": "0xb9892f0",
+          "seed": "Root vtable slot+0x30 invokes service accessor 0x36fd20; semantic role unconfirmed.",
+          "start_rva": "0x4fc50"
+        },
+        {
+          "boundary_source": "dumpbin decoded two paths including tailcall and RET; INT3 padding starts at 0x4ffe2",
+          "end_rva": "0x4ffe2",
+          "seed": "Root vtable slot+0x68 loads context+0x68 and tailcalls service vtable+0; null branch returns 0. Meaning unconfirmed.",
+          "start_rva": "0x4ffd0"
+        }
+      ]
+    },
+    "login-migration-pass2": {
+      "functions": [
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x3bcb8e",
+          "record_rva": "0xb9b6af4",
+          "seed": "Calls boolean-like 4ffd0 and references plaintext login_manager.cc; prioritize semantic identification of service vtable+0.",
+          "start_rva": "0x3bbd60"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x3b9dd9",
+          "record_rva": "0xb9b68cc",
+          "seed": "Called by login_manager.cc function with EDX=3 just before 4ffd0 test; candidate state transition dispatcher, semantics unproven.",
+          "start_rva": "0x3b9560"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x41b3c0",
+          "record_rva": "0xb9b7e14",
+          "seed": "Calls 4fff0; disassembly confirms TEST AL,AL. Seek meaning of service+0x39 bit, not assume logged-in.",
+          "start_rva": "0x41b250"
+        },
+        {
+          "boundary_source": "original PE RUNTIME_FUNCTION",
+          "end_rva": "0x4bc701",
+          "record_rva": "0xb9bf2a8",
+          "seed": "Second 4fff0 caller; cross-check service+0x39 semantics from action branch.",
+          "start_rva": "0x4bc2f0"
+        }
+      ]
+    },
+    "login-migration-pass3": {
+      "functions": [
+        {
+          "end_rva": "0x36741a",
+          "seed": "Constructor-like store vtable0x8dfe2f8 at0x365c25; initializes word+0x38=0, later XCHG byte+0x38 at366247; vtable slot0 is373dc0 reading byte+38&1. Trace state semantics.",
+          "start_rva": "0x365bf0"
+        },
+        {
+          "end_rva": "0x6603d",
+          "seed": "Only raw direct E8 call to constructor365bf0 at65fab; seek ownership assignment to root context+68.",
+          "start_rva": "0x65f60"
+        },
+        {
+          "end_rva": "0x36cee3",
+          "seed": "Other bounded XCHG byte+38 at36cd67; seek matching setter/destructor and semantics.",
+          "start_rva": "0x36cbc0"
+        },
+        {
+          "end_rva": "0x373dc7",
+          "seed": "Candidate service vtable0 reads byte+38 AND AL,1; seven-byte leaf ending RET followed by INT3. Confirm decoder.",
+          "start_rva": "0x373dc0"
+        },
+        {
+          "end_rva": "0x36f935",
+          "seed": "Candidate service vtable+18 returns address object+48; five-byte leaf RET, expected account string getter chain.",
+          "start_rva": "0x36f930"
+        }
+      ]
+    },
+    "login-migration-pass4": {
+      "functions": [
+        {
+          "end_rva": "0x65e1a",
+          "seed": "Raw direct caller of shared service factory65f60; establish assignment to root+68 and login/session creation trigger.",
+          "start_rva": "0x65980"
+        },
+        {
+          "end_rva": "0x36b5ba",
+          "seed": "Callee in clear-service-flag38 flow36cbc0; seek logout state and field39 semantics.",
+          "start_rva": "0x36b460"
+        },
+        {
+          "end_rva": "0x36e872",
+          "seed": "Callee in clear-service-flag38 flow36cbc0; seek logout state and field39 semantics.",
+          "start_rva": "0x36dd30"
+        }
+      ]
+    },
+    "message-migration-pass1": {
+      "functions": [
+        {
+          "end_rva": "0x2e2805f",
+          "seed": "new_sync.cc; network new-sync response/dispatch candidate, not generated new_sync.pb.cc",
+          "start_rva": "0x2e25b70"
+        },
+        {
+          "end_rva": "0x3895464",
+          "seed": "AddMessageListToDBForSync; incoming sync persistence candidate",
+          "start_rva": "0x38926f0"
+        },
+        {
+          "end_rva": "0x3926fbc",
+          "seed": "TaskInnerAddMessageListToDB; duplicate-svrid filtering and message-count batch task",
+          "start_rva": "0x39255e0"
+        },
+        {
+          "end_rva": "0x17a0256",
+          "seed": "CoAddGroupMessageListToDb + SaveSendMessagesAtOnce; batch send-message persistence/coroutine",
+          "start_rva": "0x179ce50"
+        },
+        {
+          "end_rva": "0x17f489a",
+          "seed": "Begin StartSendMessageSyncStage; send pipeline coroutine A",
+          "start_rva": "0x17f3750"
+        },
+        {
+          "end_rva": "0x17f840f",
+          "seed": "Begin StartSendMessageSyncStage; send pipeline coroutine B",
+          "start_rva": "0x17f7a00"
+        },
+        {
+          "end_rva": "0x54b248a",
+          "seed": "Failed to send text message; calls RVA0x178f040; probable async text-send bridge closure",
+          "start_rva": "0x54b1e10"
+        },
+        {
+          "end_rva": "0x178f0c7",
+          "seed": "Direct callee at RVA0x54b1eae; small MessageManager/send-text result wrapper",
+          "start_rva": "0x178f040"
+        }
+      ]
+    },
+    "message-migration-receive-pass1": {
+      "functions": [
+        {
+          "end_rva": "0xa5557e",
+          "seed": "Per 0x2e8 receive-record accessor before type classifier; input RCX=row",
+          "start_rva": "0xa55490"
+        },
+        {
+          "end_rva": "0xa56443",
+          "seed": "Receive-record diagnostic string builder, RCX=row RDX=string result",
+          "start_rva": "0xa56380"
+        },
+        {
+          "end_rva": "0x1c4d8d",
+          "seed": "0x2e8 receive-record copy constructor reveals field boundaries",
+          "start_rva": "0x1c42e0"
+        },
+        {
+          "end_rva": "0x156a97e",
+          "seed": "Classifier of value returned by record accessor RVA0xa55490; codes1/2 accepted",
+          "start_rva": "0x156a910"
+        },
+        {
+          "end_rva": "0x39408d1",
+          "seed": "Per entry copy during TaskInnerAddMessageListToDB duplicate-svrid query",
+          "start_rva": "0x39404b0"
+        }
+      ]
+    },
+    "message-migration-receive-pass2": {
+      "functions": [
+        {
+          "end_rva": "0x227dd52",
+          "seed": "RVA0xa56380 passes 0x2e8 receive record as RDX to this diagnostic field builder; expect msgid/type/body serialization",
+          "start_rva": "0x227db80"
+        },
+        {
+          "end_rva": "0xa18b78",
+          "seed": "Serializes diagnostic object built by0x227db80 into string (callee of0xa56380)",
+          "start_rva": "0xa185b0"
+        }
+      ]
+    },
+    "message-migration-receive-pass3": {
+      "functions": [
+        {
+          "end_rva": "0x38691ac",
+          "seed": "Encoded business log svrid at 0x94f52d0",
+          "start_rva": "0x3866510"
+        },
+        {
+          "end_rva": "0x3871047",
+          "seed": "Encoded business log empty fromuser at 0x94f5d00",
+          "start_rva": "0x3870450"
+        },
+        {
+          "end_rva": "0x3898482",
+          "seed": "Encoded business log duplicate svrid at 0x94fc828",
+          "start_rva": "0x3896fe0"
+        }
+      ]
+    }
+  }
+}

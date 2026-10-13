@@ -1,0 +1,404 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "contact-migration-pass1.json",
+      "sha256": "49a3a991dedf7ce8faf4329be97b0014445bf8d684bbf0be874336f18b26a446",
+      "functions": [
+        {
+          "start_rva": "0xe8d180",
+          "end_rva": "0xe8d29d",
+          "instructions_matched": 83,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x26e8250",
+          "end_rva": "0x26e884b",
+          "instructions_matched": 326,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x26e8c70",
+          "end_rva": "0x26e9299",
+          "instructions_matched": 343,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2fb4520",
+          "end_rva": "0x2fb67b3",
+          "instructions_matched": 1860,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2a3ba50",
+          "end_rva": "0x2a3eb54",
+          "instructions_matched": 2869,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2a785a0",
+          "end_rva": "0x2a78a11",
+          "instructions_matched": 278,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1019ce0",
+          "end_rva": "0x101acb9",
+          "instructions_matched": 917,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2e333a0",
+          "end_rva": "0x2e33625",
+          "instructions_matched": 176,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "contact-migration-pass2.json",
+      "sha256": "1c67fafc0c7f46aaea417acf347669e62bd3568dfb491ea35b8f941f3982a448",
+      "functions": [
+        {
+          "start_rva": "0x270c3b0",
+          "end_rva": "0x270c67e",
+          "instructions_matched": 198,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x27115a0",
+          "end_rva": "0x2711778",
+          "instructions_matched": 150,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2713540",
+          "end_rva": "0x271381e",
+          "instructions_matched": 201,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x6fad10",
+          "end_rva": "0x6fb1f8",
+          "instructions_matched": 304,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xf21170",
+          "end_rva": "0xf21235",
+          "instructions_matched": 54,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "contact-migration-pass3.json",
+      "sha256": "f34675b66221fa27522688190de78b426d27bcbd4d8c0b2e2cf25fd2b348ba7b",
+      "functions": [
+        {
+          "start_rva": "0xf1fbf0",
+          "end_rva": "0xf2066b",
+          "instructions_matched": 622,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xf1f280",
+          "end_rva": "0xf1f5ce",
+          "instructions_matched": 134,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x6f9130",
+          "end_rva": "0x6fa081",
+          "instructions_matched": 907,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-migration-pass1.json",
+      "sha256": "91fc68a3b00b3d76f567cabe92470c22fcca07970d0bc6e4219f0bf5fdd74dca",
+      "functions": [
+        {
+          "start_rva": "0x43fd0",
+          "end_rva": "0x44135",
+          "instructions_matched": 95,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x441a0",
+          "end_rva": "0x44762",
+          "instructions_matched": 344,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x46aa0",
+          "end_rva": "0x47080",
+          "instructions_matched": 315,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x45e00",
+          "end_rva": "0x46612",
+          "instructions_matched": 446,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4f300",
+          "end_rva": "0x4f385",
+          "instructions_matched": 45,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4fff0",
+          "end_rva": "0x500a6",
+          "instructions_matched": 60,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4fc50",
+          "end_rva": "0x4fda8",
+          "instructions_matched": 103,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4ffd0",
+          "end_rva": "0x4ffe2",
+          "instructions_matched": 7,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-migration-pass2.json",
+      "sha256": "a34d96b7ad6a75495c7e4ffecc4d258c62c893e2bd65371cd71df756eed419cc",
+      "functions": [
+        {
+          "start_rva": "0x3bbd60",
+          "end_rva": "0x3bcb8e",
+          "instructions_matched": 777,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3b9560",
+          "end_rva": "0x3b9dd9",
+          "instructions_matched": 506,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x41b250",
+          "end_rva": "0x41b3c0",
+          "instructions_matched": 82,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4bc2f0",
+          "end_rva": "0x4bc701",
+          "instructions_matched": 217,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-migration-pass3.json",
+      "sha256": "517a4df44ac6bb46c7861add37d0f1275e8d99d52dca8403f42a4ac4d3ae58a4",
+      "functions": [
+        {
+          "start_rva": "0x365bf0",
+          "end_rva": "0x36741a",
+          "instructions_matched": 1310,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x65f60",
+          "end_rva": "0x6603d",
+          "instructions_matched": 70,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36cbc0",
+          "end_rva": "0x36cee3",
+          "instructions_matched": 199,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x373dc0",
+          "end_rva": "0x373dc7",
+          "instructions_matched": 3,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36f930",
+          "end_rva": "0x36f935",
+          "instructions_matched": 2,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-migration-pass4.json",
+      "sha256": "aa65e64f2212c8829233bca25ba9b812a20760a900a81388ab9fb1a849159a13",
+      "functions": [
+        {
+          "start_rva": "0x65980",
+          "end_rva": "0x65e1a",
+          "instructions_matched": 270,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36b460",
+          "end_rva": "0x36b5ba",
+          "instructions_matched": 77,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36dd30",
+          "end_rva": "0x36e872",
+          "instructions_matched": 629,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-migration-pass1.json",
+      "sha256": "96fb2107882494c6a8210215cc8346fd01c13f45a3e097a34db988def1b018cc",
+      "functions": [
+        {
+          "start_rva": "0x2e25b70",
+          "end_rva": "0x2e2805f",
+          "instructions_matched": 2064,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x38926f0",
+          "end_rva": "0x3895464",
+          "instructions_matched": 2510,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x39255e0",
+          "end_rva": "0x3926fbc",
+          "instructions_matched": 1483,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x179ce50",
+          "end_rva": "0x17a0256",
+          "instructions_matched": 2784,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f3750",
+          "end_rva": "0x17f489a",
+          "instructions_matched": 999,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f7a00",
+          "end_rva": "0x17f840f",
+          "instructions_matched": 565,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x54b1e10",
+          "end_rva": "0x54b248a",
+          "instructions_matched": 365,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x178f040",
+          "end_rva": "0x178f0c7",
+          "instructions_matched": 45,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-migration-receive-pass1.json",
+      "sha256": "26e77262802df2765c0e8a7bfeaa88570326cab7b32747f4cef8087eba40d7be",
+      "functions": [
+        {
+          "start_rva": "0xa55490",
+          "end_rva": "0xa5557e",
+          "instructions_matched": 79,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xa56380",
+          "end_rva": "0xa56443",
+          "instructions_matched": 56,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1c42e0",
+          "end_rva": "0x1c4d8d",
+          "instructions_matched": 601,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x156a910",
+          "end_rva": "0x156a97e",
+          "instructions_matched": 38,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x39404b0",
+          "end_rva": "0x39408d1",
+          "instructions_matched": 276,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-migration-receive-pass2.json",
+      "sha256": "a2b47837170b25fbd657d4b7cb25962bed5473bcdb0835ff46cd4350a92c69f9",
+      "functions": [
+        {
+          "start_rva": "0x227db80",
+          "end_rva": "0x227dd52",
+          "instructions_matched": 127,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xa185b0",
+          "end_rva": "0xa18b78",
+          "instructions_matched": 391,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-migration-receive-pass3.json",
+      "sha256": "77a920708d9964218f838f766339dff8dace8b663ad294fa5adda159b3cd1904",
+      "functions": [
+        {
+          "start_rva": "0x3866510",
+          "end_rva": "0x38691ac",
+          "instructions_matched": 2583,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3870450",
+          "end_rva": "0x3871047",
+          "instructions_matched": 635,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3896fe0",
+          "end_rva": "0x3898482",
+          "instructions_matched": 1174,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 54,
+  "instruction_count": 31754,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}

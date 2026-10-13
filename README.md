@@ -1,11 +1,13 @@
 # wxhelper
 wechat hook，PC 端微信逆向学习。
 
-**当前分支后端仅对应 `WeChatWin.dll 3.9.5.81 x64`。Weixin 4.1.15.13 尚未适配。**
+**当前 DLL/HTTP 后端仅对应 `WeChatWin.dll 3.9.5.81 x64`。Weixin 4.1.15.13 已有实验性离线快照适配，尚不支持在线业务调用。**
 历史版本列表代表其他分支，不代表当前源码可以跨版本使用。4.x 使用 `Weixin.dll`；旧偏移和结构不能直接沿用。
 
 本次兼容性修复、REA 证据、验证结果及剩余迁移工作见 [4.1.15.13 分析记录](doc/weixin-4.1.15.13-analysis.md)。
 用户提供的 IDA 7 可通过[定向分析脚本与说明](doc/ida7-analysis.md)复用本地数据库；静态分析候选尚未加入业务后端。
+
+4.x 的[离线快照库与命令行工具](doc/weixin4-snapshots.md)已分别实现[登录对象读取](doc/weixin4-login.md)、[联系人查询结果解析](doc/weixin4-contacts.md)、[发送任务与接收批次解析](doc/weixin4-messages.md)。它们只处理传入的稳定快照，不获取运行中微信的数据、不注入、不发送消息。登录状态语义、全联系人查询及实时消息收发仍未验证。
 
 - 新增 `wxhelper_probe.exe <客户端 DLL 完整路径>`，只读检查架构、模块名及文件版本；退出码 `0` 为命中旧版本配置、`2` 为不支持。
 - DLL 会在启动服务和调用旧偏移前拒绝未知版本。不要直接将 `WeChatWin.dll` 改成 `Weixin.dll` 绕过检查。

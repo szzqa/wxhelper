@@ -28,6 +28,44 @@ ctest --test-dir out/build/snapshots -C Release --output-on-failure
 
 合成快照测试涵盖短/长字符串、内嵌 NUL、无效指针、边界溢出、损坏长度、容量中未初始化对象、累计预算和版本/架构/哈希不匹配。通过这些测试只证明解析器按契约工作，不证明微信运行时业务兼容。
 
+## 已实现的模块
+
+| 模块 | 可读取内容 | 仍未完成 |
+| --- | --- | --- |
+| [登录](weixin4-login.md) | 根对象、服务对象、两虚表、生命周期标志、账号查询键 | `state` 保持 `unknown`；未确定真实认证/重连状态 |
+| [联系人](weixin4-contacts.md) | 已完成查询结果中的 13 个文本字段、8 个数值字段 | 不发起查询；不保证是完整联系人列表 |
+| [消息](weixin4-messages.md) | 发送任务及调用结果、接收批次中的服务器 ID 和选定未命名字段 | 正文、类型、方向和时间未恢复；无在线收发 |
+
+## 离线命令行
+
+命令行需要 nlohmann/json（本次验证使用 v3.11.3），不需要 Detours 或注入。已有源码依赖可这样构建：
+
+```powershell
+cmake -S . -B out/build/snapshot-cli -A x64 `
+  -DWXHELPER_BUILD_DLL=OFF -DWXHELPER_BUILD_SNAPSHOT_CLI=ON `
+  -DWXHELPER_JSON_SOURCE_DIR="$PWD/out/deps/json"
+cmake --build out/build/snapshot-cli --config Release
+python scripts/make_weixin4_fixture.py --output out/synthetic-weixin4.json
+.\out\build\snapshot-cli\Release\weixin4_snapshot_cli.exe out/synthetic-weixin4.json
+ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
+```
+
+示例生成器完全构造合成数据，不读取微信或账号。示例结果应包含 `fixture_user`、`测试昵称` 和十进制字符串服务器 ID `18364758544493064720`；这些都是测试值。登录状态仍为 `unknown`，发送调用成功不代表消息送达。
+
+输入 JSON 格式为 `weixin4_snapshot_v1`，包含 `identity`、`segments` 和 `requests`。`identity` 为版本、原始 SHA-256 和 machine；每个 segment 包含起始 `address` 与完整字节的 `hex`。每个 request 包含 `feature` 与 `address`。地址可用 `0x` 十六进制字符串或非负 JSON 整数。
+
+| feature | address 含义 |
+| --- | --- |
+| `login` | 快照中的模块基址 |
+| `contacts` | 已完成联系人查询结果的起点 |
+| `send_task` | 已存在发送任务 closure 的起点 |
+| `send_result` | 已存在任务结果的起点 |
+| `receive_batch` | 0x2e8 字节消息记录 vector 头的起点 |
+
+片段不可重叠；每次对象读取范围必须落在单一片段内。JSON 文件最多 80 MiB，解码字节最多 32 MiB、片段最多 10,000、请求最多 32、嵌套最多 64 层。CLI 使用固定的默认对象读取预算。服务器 ID 以十进制字符串输出，避免 JavaScript 对大整数丢失精度；非法 UTF-8 字节在 JSON 展示中替换，库本身仍保留原始字节。
+
+退出码：`0` 所有请求解析成功，`2` 某个请求读取/布局/profile 不匹配，`1` 输入或格式错误。成功仅代表解析成功；`runtime_supported`、`snapshot_provenance_verified` 始终为 `false`。错误请求不附带半成品数据。
+
 ## 分析来源
 
 REA 提供原始 PE 资源证据；IDA 7.0/Hex-Rays 的定向静态结果是独立证据，未伪装为 REA 返回结果。可复用脚本为 `scripts/prepare_ida7_view.py`、`scripts/ida7_analyze.py`、`scripts/run_ida7_job.ps1`。分析二进制、数据库与完整反编译结果保留在本地 `out/analysis/weixin-4.1.15.13/`，不上传仓库。

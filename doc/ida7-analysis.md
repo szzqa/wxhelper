@@ -54,6 +54,31 @@ $idaProcess.Id
 
 ## 证据边界
 
+登录、联系人和消息后续 54 个定向函数结果的作业范围已保存为 [weixin4-analysis-jobs.json](weixin4-analysis-jobs.json)，原始文件逐条指令比对摘要见 [weixin4-instruction-verification.json](weixin4-instruction-verification.json)。共比对 31,754 条指令；这不包含前期 16 个函数的计数，也不等于运行时验证。
+
+对已存在的分析副本数据库，可选择一个作业重新分析。下例复用本地路径，脚本不会执行输入 DLL：
+
+```powershell
+$analysisDir = (Resolve-Path 'out/analysis/weixin-4.1.15.13/ida7-focused').Path
+$catalog = Get-Content doc/weixin4-analysis-jobs.json -Raw | ConvertFrom-Json
+$job = @{
+  expected_sha256 = $catalog.analysis_sha256
+  provenance_manifest = "$analysisDir/Weixin.analysis-pe.manifest.json"
+  output = "$analysisDir/contact-fields-rerun.json"
+  max_pseudocode_chars = $catalog.max_pseudocode_chars
+  functions = $catalog.jobs.'contact-migration-pass3'.functions
+}
+$job | ConvertTo-Json -Depth 10 | Set-Content "$analysisDir/contact-fields-rerun-job.json" -Encoding utf8
+.\scripts\run_ida7_job.ps1 -JobFile "$analysisDir/contact-fields-rerun-job.json" `
+  -Database "$analysisDir/Weixin-focused.i64" -IdaDirectory 'D:\IDA'
+python scripts/verify_ida_evidence.py `
+  --binary 'C:\Program Files\Tencent\Weixin\4.1.15.13\Weixin.dll' `
+  --results "$analysisDir/contact-fields-rerun.json" `
+  --output "$analysisDir/contact-fields-verification.json"
+```
+
+作业必须串行打开同一个数据库。`verify_ida_evidence.py` 拒绝哈希不匹配、未完成/非静态结果和与原件不符的指令字节；它不验证字段命名或反编译器推断的类型。摘要中的结果文件 SHA-256 用于核对本地保留的原始结果，重新运行时元数据和文件哈希可能变化。
+
 输出包括输入哈希、IDA/反编译器版本、实际函数边界、指令字节、数据引用、调用和伪代码。`auto_analysis_complete=false` 表示仍有未执行的自动分析任务。未恢复的函数类型、间接调用目标、异常处理和 C++ 数据布局仍需继续核实；反编译器推导的参数数量不能直接作为注入调用原型。
 
 候选地址必须先比对指令及引用，再追踪数据来源。源码中的旧 `AccountService + 0x7F8` 不能因为新版出现相似字符串就继续使用。只有完整验证新版本的调用约定、对象生命周期及运行行为后，才能把新配置加入兼容性白名单。
