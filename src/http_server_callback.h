@@ -6,7 +6,7 @@
 #include "mongoose.h"
 
 
-void StartHttpServer(wxhelper::HttpServer *server);
+DWORD WINAPI StartHttpServer(LPVOID context);
 
 void EventHandler(struct mg_connection *c, int ev, void *ev_data,
                   void *fn_data);

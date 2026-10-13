@@ -1,3 +1,9 @@
+"""Examples for the current 3.9.5.81 named API, retaining legacy function names.
+
+Unsupported legacy operations raise NotImplementedError before making a request.
+These examples do not add Weixin 4.x support.
+"""
+
 import requests
 import json
 
@@ -7,7 +13,7 @@ def check_login():
      0.检查是否登录
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=0"
+    url = "http://127.0.0.1:19088/api/checkLogin"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -19,7 +25,7 @@ def user_info():
     登录用户信息
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=8"
+    url = "http://127.0.0.1:19088/api/userInfo"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -31,7 +37,7 @@ def send_text():
     发送文本
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=2"
+    url = "http://127.0.0.1:19088/api/sendTextMsg"
     payload = json.dumps({
         "wxid": "filehelper",
         "msg": "123"
@@ -48,7 +54,7 @@ def send_at():
     发送@消息
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=3"
+    url = "http://127.0.0.1:19088/api/sendAtText"
     payload = json.dumps({
         "chatRoomId": "12333@chatroom",
         "wxids": "notify@all",
@@ -66,7 +72,7 @@ def send_img():
     发送图片
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=5"
+    url = "http://127.0.0.1:19088/api/sendImagesMsg"
     payload = json.dumps({
         "wxid": "filehelper",
         "imagePath": "C:/123.png"
@@ -83,7 +89,7 @@ def send_file():
     发送文件
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=6"
+    url = "http://127.0.0.1:19088/api/sendFileMsg"
     payload = json.dumps({
         "wxid": "filehelper",
         "filePath": "C:/test.txt"
@@ -100,10 +106,11 @@ def hook_msg():
     hook 消息
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=9"
+    url = "http://127.0.0.1:19088/api/hookSyncMsg"
     payload = json.dumps({
         "port": "19099",
-        "ip": "127.0.0.1"
+        "ip": "127.0.0.1",
+        "enableHttp": 0
     })
     headers = {
         'Content-Type': 'application/json'
@@ -117,7 +124,7 @@ def unhook_msg():
     取消消息hook
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=10"
+    url = "http://127.0.0.1:19088/api/unhookSyncMsg"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -125,111 +132,80 @@ def unhook_msg():
 
 
 def hook_img():
-    """
-    hook 图片
+    """hook 图片
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=11"
-    payload = json.dumps({
-        "imgDir": "C:\\img"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "hook_img is not implemented by the current named API"
+    )
 
 
 def unhook_img():
-    """
-    取消hook 图片
+    """取消hook 图片
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=12"
-    payload = json.dumps({
-        "imgDir": "C:\\img"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "unhook_img is not implemented by the current named API"
+    )
 
 
 def hook_voice():
-    """
-    hook 语音
+    """hook 语音
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=56"
-    payload = json.dumps({
-        "msgId": 322456091115784000
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "hook_voice is not implemented by the current named API"
+    )
 
 
 def unhook_voice():
-    """
-    取消hook 语音
+    """取消hook 语音
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=14"
-    payload = {}
-    headers = {}
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "unhook_voice is not implemented by the current named API"
+    )
 
 
 def del_friend():
-    """
-    删除好友
+    """删除好友
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=17"
-    payload = json.dumps({
-        "wxid": "wxid_1124423322"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "del_friend is not implemented by the current named API"
+    )
 
 
 def search_friend():
-    """
-    网络搜素用户
+    """网络搜素用户
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=19"
-    payload = json.dumps({
-        "keyword": "13812345678"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "search_friend is not implemented by the current named API"
+    )
 
 
 def add_friend():
-    """
-    添加好友
+    """添加好友
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=20"
-    payload = json.dumps({
-        "wxid": "wxid_o11222334422"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "add_friend is not implemented by the current named API"
+    )
 
 
 def fetch_chat_room_members():
@@ -237,7 +213,7 @@ def fetch_chat_room_members():
     群成员
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=25"
+    url = "http://127.0.0.1:19088/api/getMemberFromChatRoom"
     payload = json.dumps({
         "chatRoomId": "2112222004@chatroom"
     })
@@ -249,20 +225,14 @@ def fetch_chat_room_members():
 
 
 def get_member_nickname():
-    """
-    群成员昵称
+    """群成员昵称
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=26"
-    payload = json.dumps({
-        "chatRoomId": "322333384@chatroom",
-        "memberId": "wxid_4m1112222u22"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "get_member_nickname is not implemented by the current named API"
+    )
 
 
 def del_member():
@@ -270,7 +240,7 @@ def del_member():
     删除群成员
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=27"
+    url = "http://127.0.0.1:19088/api/delMemberFromChatRoom"
     payload = json.dumps({
         "chatRoomId": "31122263384@chatroom",
         "memberIds": "wxid_12223334422"
@@ -287,7 +257,7 @@ def add_member():
     增加群成员
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=28"
+    url = "http://127.0.0.1:19088/api/addMemberToChatRoom"
     payload = json.dumps({
         "chatRoomId": "1111163384@chatroom",
         "memberIds": "wxid_o12222222"
@@ -304,7 +274,7 @@ def modify_room_name():
     修改群昵称
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=31"
+    url = "http://127.0.0.1:19088/api/modifyNickname"
     payload = json.dumps({
         "chatRoomId": "222285428@chatroom",
         "wxid": "wxid_222222512",
@@ -322,7 +292,7 @@ def get_db_handlers():
     获取sqlite3的操作句柄
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=32"
+    url = "http://127.0.0.1:19088/api/getDBInfo"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -334,7 +304,7 @@ def query_db_by_sql():
     查询数据库
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=34"
+    url = "http://127.0.0.1:19088/api/execSql"
     payload = json.dumps({
         "dbHandle": 116201928,
         "sql": "select localId from MSG where MsgSvrID= 7533111101686156"
@@ -351,7 +321,7 @@ def hook_log():
     hook 日志
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=36"
+    url = "http://127.0.0.1:19088/api/hookLog"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -363,7 +333,7 @@ def unhook_log():
     取消hook日志
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=37"
+    url = "http://127.0.0.1:19088/api/unhookLog"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -375,10 +345,10 @@ def forward():
     转发消息
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=40"
+    url = "http://127.0.0.1:19088/api/forwardMsg"
     payload = json.dumps({
         "wxid": "filehelper",
-        "msgid": "705117679011122708"
+        "msgId": "705117679011122708"
     })
     headers = {
         'Content-Type': 'application/json'
@@ -388,33 +358,25 @@ def forward():
 
 
 def logout():
-    """
-    退出登录
+    """退出登录
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=44"
-    payload = {}
-    headers = {}
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "logout is not implemented by the current named API"
+    )
 
 
 def confirm_receipt():
-    """
-    确认收款
+    """确认收款
     :return:
+
+    当前 3.9.5.81 源码未实现此接口。
     """
-    url = "127.0.0.1:19088/api/?type=45"
-    payload = json.dumps({
-        "wxid": "wxid_1111112622",
-        "transcationId": "10000500012312222212243388865912",
-        "transferId": "100005000120212222173123036"
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    raise NotImplementedError(
+        "confirm_receipt is not implemented by the current named API"
+    )
 
 
 def contact_list():
@@ -422,7 +384,7 @@ def contact_list():
     好友列表
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=46"
+    url = "http://127.0.0.1:19088/api/getContactList"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -434,7 +396,7 @@ def room_detail():
     群详情
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=47"
+    url = "http://127.0.0.1:19088/api/getChatRoomDetailInfo"
     payload = json.dumps({
         "chatRoomId": "199134446111@chatroom"
     })
@@ -450,7 +412,7 @@ def ocr():
     ocr提取文字
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=49"
+    url = "http://127.0.0.1:19088/api/ocr"
     payload = json.dumps({
         "imagePath": "C:\\WeChat Files\\b23e84997144dd12f21554b0.dat"
     })
@@ -466,9 +428,9 @@ def pat():
     拍一拍
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=50"
+    url = "http://127.0.0.1:19088/api/sendPatMsg"
     payload = json.dumps({
-        "chatRoomId": "211111121004@chatroom",
+        "receiver": "211111121004@chatroom",
         "wxid": "wxid_111111111422"
     })
     headers = {
@@ -483,10 +445,10 @@ def top_msg():
     消息置顶
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=51"
+    url = "http://127.0.0.1:19088/api/topMsg"
     payload = json.dumps({
         "wxid": "wxid_o11114422",
-        "msgid": 3728307145189195000
+        "msgId": 3728307145189195000
     })
     headers = {
         'Content-Type': 'application/json'
@@ -500,10 +462,10 @@ def close_top_msg():
     取消置顶
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=52"
+    url = "http://127.0.0.1:19088/api/removeTopMsg"
     payload = json.dumps({
         "chatRoomId": "213222231004@chatroom",
-        "msgid": 3728307145189195000
+        "msgId": 3728307145189195000
     })
     headers = {
         'Content-Type': 'application/json'
@@ -517,7 +479,7 @@ def sns_first():
     朋友圈首页
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=53"
+    url = "http://127.0.0.1:19088/api/getSNSFirstPage"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -529,7 +491,7 @@ def sns_next():
     朋友圈下一页
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=54"
+    url = "http://127.0.0.1:19088/api/getSNSNextPage"
     payload = json.dumps({
         "snsId": "14091988153735844377"
     })
@@ -542,13 +504,13 @@ def sns_next():
 
 def query_nickname():
     """
-    查询联系人或群名称
+    查询联系人资料，名称位于返回结果 data.nickname
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=55"
+    url = "http://127.0.0.1:19088/api/getContactProfile"
 
     payload = json.dumps({
-        "id": "wxid_1112p4422"
+        "wxid": "wxid_1112p4422"
     })
     headers = {
         'Content-Type': 'application/json'
@@ -562,7 +524,7 @@ def download_msg_attach():
     下载消息附件
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=56"
+    url = "http://127.0.0.1:19088/api/downloadAttach"
     payload = json.dumps({
         "msgId": 6080100336053626000
     })
@@ -578,7 +540,7 @@ def get_member_info():
     获取群/群成员信息
     :return:
     """
-    url = "127.0.0.1:19088/api/?type=57"
+    url = "http://127.0.0.1:19088/api/getContactProfile"
     payload = json.dumps({
         "wxid": "wxid_tx8k6tu21112"
     })
@@ -591,5 +553,3 @@ def get_member_info():
 
 if __name__ == '__main__':
     check_login()
-    user_info()
-    send_text()

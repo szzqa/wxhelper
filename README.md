@@ -1,5 +1,28 @@
 # wxhelper
-wechat hook 。PC端微信逆向学习。支持3.8.0.41，3.8.1.26, 3.9.0.28, 3.9.2.23,3.9.2.26版本。
+wechat hook，PC 端微信逆向学习。
+
+**当前分支后端仅对应 `WeChatWin.dll 3.9.5.81 x64`。Weixin 4.1.15.13 尚未适配。**
+历史版本列表代表其他分支，不代表当前源码可以跨版本使用。4.x 使用 `Weixin.dll`；旧偏移和结构不能直接沿用。
+
+本次兼容性修复、REA 证据、验证结果及剩余迁移工作见 [4.1.15.13 分析记录](doc/weixin-4.1.15.13-analysis.md)。
+用户提供的 IDA 7 可通过[定向分析脚本与说明](doc/ida7-analysis.md)复用本地数据库；静态分析候选尚未加入业务后端。
+
+- 新增 `wxhelper_probe.exe <客户端 DLL 完整路径>`，只读检查架构、模块名及文件版本；退出码 `0` 为命中旧版本配置、`2` 为不支持。
+- DLL 会在启动服务和调用旧偏移前拒绝未知版本。不要直接将 `WeChatWin.dll` 改成 `Weixin.dll` 绕过检查。
+- HTTP 默认仅监听 `127.0.0.1:19088`。服务启动在加载锁之外完成；加载成功不等于 API 已就绪。
+- 成功加载到受支持客户端后，DLL 固定到进程生命周期。停止 helper 需要正常退出微信；不支持动态卸载。
+- 注入器已删除不适用 x64 的 `-P` 机器码路径，该参数会明确报错。端口使用 `config.ini`。
+- 仓库 `tool/` 内历史预编译文件没有更新，验证和使用应采用本地重新构建的产物。
+
+只构建诊断和注入工具（不需要第三方 C++ 库）：
+
+```powershell
+cmake -S . -B out/build/tools -A x64 -DWXHELPER_BUILD_DLL=OFF
+cmake --build out/build/tools --config Release
+.\out\build\tools\Release\wxhelper_probe.exe 'C:\Program Files\Tencent\Weixin\4.1.15.13\Weixin.dll'
+```
+
+以下为项目历史说明，涉及其他版本或 `-P` 的示例不适用于当前分支。
 #### 免责声明:
 本仓库发布的内容，仅用于学习研究，请勿用于非法用途和商业用途！如因此产生任何法律纠纷，均与作者无关！
 

@@ -294,33 +294,30 @@ namespace prototype {
 #include <vector>
 
 struct WeChatString {
-  wchar_t *ptr;
-  DWORD length;
-  DWORD max_length;
+  wchar_t *ptr = nullptr;
+  DWORD length = 0;
+  DWORD max_length = 0;
   INT64 c_ptr = 0;
   DWORD c_len = 0;
-  WeChatString() { WeChatString(NULL); }
+  WeChatString() = default;
 
   WeChatString(const std::wstring &s) {
     ptr = (wchar_t *)(s.c_str());
     length = static_cast<DWORD>(s.length());
     max_length = static_cast<DWORD>(s.length());
   }
-  WeChatString(const wchar_t *pStr) { WeChatString((wchar_t *)pStr); }
-  WeChatString(int tmp) {
-    ptr = NULL;
-    length = 0x0;
-    max_length = 0x0;
-  }
+  WeChatString(const wchar_t *pStr)
+      : WeChatString(const_cast<wchar_t *>(pStr)) {}
+  WeChatString(int) : WeChatString() {}
   WeChatString(wchar_t *pStr) {
     ptr = pStr;
-    length = static_cast<DWORD>(wcslen(pStr));
-    max_length = static_cast<DWORD>(wcslen(pStr));
+    length = pStr ? static_cast<DWORD>(wcslen(pStr)) : 0;
+    max_length = length;
   }
   void set_value(const wchar_t *pStr) {
     ptr = (wchar_t *)pStr;
-    length = static_cast<DWORD>(wcslen(pStr));
-    max_length = static_cast<DWORD>(wcslen(pStr) * 2);
+    length = pStr ? static_cast<DWORD>(wcslen(pStr)) : 0;
+    max_length = length * 2;
   }
 };
 

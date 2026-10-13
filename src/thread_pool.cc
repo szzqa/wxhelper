@@ -5,6 +5,13 @@
 #include "Windows.h"
 
 namespace wxhelper {
+ThreadPool& ThreadPool::GetInstance() {
+  // The helper is pinned. Windows reclaims this pool when the process exits;
+  // a static destructor must not wait for callbacks under the loader lock.
+  static ThreadPool* instance = new ThreadPool();
+  return *instance;
+}
+
 ThreadPool::~ThreadPool() {
   if(cleanup_group_){
     CloseThreadpoolCleanupGroupMembers(cleanup_group_, true, NULL);
@@ -20,15 +27,22 @@ bool ThreadPool::Create(unsigned long min, unsigned long max) {
   InitializeThreadpoolEnvironment(&env_);
   pool_ = CreateThreadpool(NULL);
   if (NULL == pool_) {
+    DestroyThreadpoolEnvironment(&env_);
     return false;
   }
   SetThreadpoolThreadMaximum(pool_, max);
   BOOL ret = SetThreadpoolThreadMinimum(pool_, min);
   if (FALSE == ret) {
+    CloseThreadpool(pool_);
+    pool_ = nullptr;
+    DestroyThreadpoolEnvironment(&env_);
     return false;
   }
   cleanup_group_ = CreateThreadpoolCleanupGroup();
   if (NULL == cleanup_group_) {
+    CloseThreadpool(pool_);
+    pool_ = nullptr;
+    DestroyThreadpoolEnvironment(&env_);
     return false;
   }
   SetThreadpoolCallbackPool(&env_, pool_);

@@ -1,20 +1,33 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(injector VERSION 1.0.0)
+cmake_minimum_required(VERSION 3.15)
+project(injector VERSION 1.0.0 LANGUAGES CXX)
 
+if(NOT WIN32 OR NOT MSVC)
+  message(FATAL_ERROR "The injector requires Windows and MSVC.")
+endif()
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "This wxhelper branch requires a 64-bit injector; configure with -A x64.")
+endif()
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+add_executable(injector injector.cc)
+target_compile_features(injector PRIVATE cxx_std_17)
+target_compile_definitions(injector PRIVATE UNICODE _UNICODE _CRT_SECURE_NO_WARNINGS)
+target_compile_options(injector PRIVATE /utf-8)
+target_link_libraries(injector PRIVATE advapi32)
+set_target_properties(injector PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D '_UNICODE' /D 'UNICODE'")
-
-file(GLOB INJECT_CPP_FILES  ${PROJECT_SOURCE_DIR}/*.cc  ${PROJECT_SOURCE_DIR}/*.cpp)
-
-add_executable (injector  ${INJECT_CPP_FILES})
-
-SET_TARGET_PROPERTIES(injector PROPERTIES LINKER_LANGUAGE C
-                      ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
-                      LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
-                      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
-                      OUTPUT_NAME "injector"
-                      PREFIX "")
-           
+option(WXHELPER_INJECTOR_TESTS "Build isolated injector fixtures (never uses WeChat)" OFF)
+if(WXHELPER_INJECTOR_TESTS)
+  enable_testing()
+  add_executable(injector_test_target tests/injection_target.cc)
+  add_library(injector_test_accept SHARED tests/injection_fixture.cc)
+  add_library(injector_test_reject SHARED tests/injection_fixture.cc)
+  target_compile_definitions(injector_test_reject PRIVATE REJECT_ON_ATTACH)
+  add_test(NAME injector_smoke COMMAND powershell.exe -NoProfile -ExecutionPolicy Bypass
+    -File "${CMAKE_CURRENT_SOURCE_DIR}/tests/injector_smoke.ps1"
+    -Injector "$<TARGET_FILE:injector>"
+    -Target "$<TARGET_FILE:injector_test_target>"
+    -AcceptedDll "$<TARGET_FILE:injector_test_accept>"
+    -RejectedDll "$<TARGET_FILE:injector_test_reject>")
+  set_tests_properties(injector_smoke PROPERTIES TIMEOUT 45)
+endif()

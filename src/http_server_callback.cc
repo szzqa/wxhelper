@@ -58,21 +58,12 @@ std::vector<std::wstring> GetArrayParam(nlohmann::json data,  std::string key) {
 }
 
 
-void StartHttpServer(wxhelper::HttpServer *server) {
-  int port = server->GetPort();
-  std::string lsten_addr = "http://0.0.0.0:" + std::to_string(port);
-  if (mg_http_listen(const_cast<mg_mgr *>(server->GetMgr()), lsten_addr.c_str(),
-                     EventHandler,
-                     const_cast<mg_mgr *>(server->GetMgr())) == NULL) {
-    SPDLOG_INFO("http server  listen fail.port:{}", port);
-#ifdef _DEBUG
-    MG_INFO(("http server  listen fail.port: %d", port));
-#endif
-    return;
+DWORD WINAPI StartHttpServer(LPVOID context) {
+  auto *server = static_cast<wxhelper::HttpServer *>(context);
+  while (server->GetRunning()) {
+    mg_mgr_poll(const_cast<mg_mgr *>(server->GetMgr()), 100);
   }
-  for (;;) {
-    mg_mgr_poll(const_cast<mg_mgr *>(server->GetMgr()), 1000);
-  }
+  return 0;
 }
 
 void EventHandler(struct mg_connection *c, int ev, void *ev_data,

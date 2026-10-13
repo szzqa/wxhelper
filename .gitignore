@@ -33,3 +33,5 @@
 CMakePresets.json
 .vscode
 out
+__pycache__/
+*.pyc
