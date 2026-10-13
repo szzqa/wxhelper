@@ -22,7 +22,8 @@ add_subdirectory(source)
 
 # Static snapshot decoders only; deliberately separate from the injected DLL.
 add_library(weixin4_snapshot STATIC
-  src/weixin4/memory_reader.cc src/weixin4/profile.cc)
+  src/weixin4/memory_reader.cc src/weixin4/profile.cc
+  src/weixin4/contact_backend.cc)
 target_include_directories(weixin4_snapshot PUBLIC src)
 
 option(WXHELPER_BUILD_DLL "Build the legacy 3.9.5.81 backend" ON)
@@ -72,6 +73,10 @@ if(BUILD_TESTING)
   target_link_libraries(weixin4_memory_tests PRIVATE weixin4_snapshot)
   target_compile_options(weixin4_memory_tests PRIVATE /UNDEBUG)
   add_test(NAME weixin4_memory COMMAND weixin4_memory_tests)
+  add_executable(weixin4_contact_tests tests/weixin4_contact_tests.cc)
+  target_link_libraries(weixin4_contact_tests PRIVATE weixin4_snapshot)
+  target_compile_options(weixin4_contact_tests PRIVATE /UNDEBUG)
+  add_test(NAME weixin4_contacts COMMAND weixin4_contact_tests)
   add_executable(wechat_string_test tests/wechat_string_test.cc)
   target_compile_options(wechat_string_test PRIVATE /UNDEBUG)
   add_test(NAME wechat_string COMMAND wechat_string_test)
