@@ -62,6 +62,7 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 | `contact_task` | 已存在存储任务闭包的起点，仅读取其用户名输入 |
 | `contact_type_query` | 按 local_type 查询的完成输出，optional 链表头；`result_present` 区分无结果与有效空列表，不保证完整通讯录 |
 | `send_task` | 已存在发送任务 closure 的起点 |
+| `text_draft` | 文本消息工厂产物的 `{object, control}` pair 地址，另需 `module_base`；正文参数字节同时提供 `text_argument_hex`，不执行构造或发送 |
 | `send_result` | 已存在任务结果的起点 |
 | `send_completion` | 已提取的 56 字节调用方结果；状态、原始字符串和不跟随的 payload 引用；参见[发送契约](weixin4-send-native-contract.md) |
 | `receive_batch` | 0x2e8 字节消息记录 vector 头的起点 |

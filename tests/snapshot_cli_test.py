@@ -79,6 +79,29 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertFalse(completion["delivery_verified"])
         self.assertFalse(completion["server_acknowledgement_verified"])
 
+    def test_text_draft_preserves_raw_argument_bytes_without_sending(self):
+        value = fixture()
+        value["requests"] = [{"feature": "text_draft", "address": "0xb800", "module_base": "0x180000000"}]
+        memory = bytearray.fromhex(value["segments"][0]["hex"])
+        raw = b"a\x00\xff\xfe"
+        memory[0xb768 - 0x1000:0xb768 - 0x1000 + 5] = raw + b"\x00"
+        struct.pack_into("<Q", memory, 0xb778 - 0x1000, len(raw))
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        draft = json.loads(result.stdout)["results"][0]["data"]
+        self.assertEqual(draft["chat_id"], "fixture_chat")
+        self.assertEqual(draft["text_argument_hex"], raw.hex())
+        self.assertEqual(draft["word_118_raw"], 1)
+        self.assertFalse(draft["native_construction_executed"])
+        self.assertFalse(draft["send_executed"])
+        # A malformed owner cannot reuse an otherwise readable text payload.
+        struct.pack_into("<Q", memory, 0xb020 - 0x1000, 0)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertNotIn("data", json.loads(result.stdout)["results"][0])
+
     def test_contact_type_query_preserves_absent_and_valid_empty(self):
         for present, count in ((1, 1), (1, 0), (0, 0)):
             value = fixture()

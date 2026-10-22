@@ -1,0 +1,69 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "message-lifecycle-pass1.json",
+      "sha256": "faf20126b60fb37555611459aa7cadba2476c01803978b44680d1b52c97bf946",
+      "functions": [
+        {
+          "start_rva": "0x54b02f0",
+          "end_rva": "0x54b103e",
+          "instructions_matched": 782,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-construction-pass2.json",
+      "sha256": "23f236359af714fa79bcad0e83b83c31da35c00ef35f9b6f07c63271fc58ab06",
+      "functions": [
+        {
+          "start_rva": "0x6f4c70",
+          "end_rva": "0x6f4d58",
+          "instructions_matched": 73,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x766680",
+          "end_rva": "0x766743",
+          "instructions_matched": 48,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x6f4d90",
+          "end_rva": "0x6f4ead",
+          "instructions_matched": 83,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x48bd30",
+          "end_rva": "0x48c5fa",
+          "instructions_matched": 514,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-lifecycle-pass3.json",
+      "sha256": "c2977d3bfc1685f3c58c5ca354d7397120a32a3d2b10df69f78758f932b27d8a",
+      "functions": [
+        {
+          "start_rva": "0x766780",
+          "end_rva": "0x766a9d",
+          "instructions_matched": 147,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 6,
+  "instruction_count": 1647,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ],
+  "scope": "Full report bytes verified first; this summary lists only functions used by construction. Report SHA-256 identifies the complete local file."
+}

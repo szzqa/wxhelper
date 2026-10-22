@@ -4,6 +4,7 @@
 #include "weixin4/auth_backend.h"
 #include "weixin4/login_backend.h"
 #include "weixin4/message_backend.h"
+#include "weixin4/message_construction.h"
 #include "weixin4/receive_contract.h"
 #include "weixin4/send_contract.h"
 
@@ -104,6 +105,17 @@ json Message(const ReceiveRecordSnapshot& value) {
           {"content", value.content}};
 }
 
+std::string BytesHex(const std::string& bytes) {
+  constexpr char digits[] = "0123456789abcdef";
+  std::string output;
+  output.reserve(bytes.size() * 2);
+  for (const unsigned char byte : bytes) {
+    output.push_back(digits[byte >> 4]);
+    output.push_back(digits[byte & 15]);
+  }
+  return output;
+}
+
 json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& request) {
   const auto feature = request.at("feature").get<std::string>();
   const auto address = Address(request.at("address"));
@@ -157,6 +169,16 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
             {"message_control_address", value.message.control_block_address},
             {"strong_count", value.message.strong_count}, {"weak_count", value.message.weak_count},
             {"has_control_block", value.message.has_control_block}};
+  } else if (feature == "text_draft") {
+    TextMessageDraftSnapshot value;
+    status = ReadTextMessageDraftSnapshot(memory, identity,
+        Address(request.at("module_base")), address, value);
+    data = {{"chat_id", value.chat_id}, {"text_argument_bytes", value.text_argument_bytes},
+            {"text_argument_hex", BytesHex(value.text_argument_bytes)},
+            {"word_118_raw", value.word_118_raw},
+            {"message_object_address", std::to_string(value.owner.object_address)},
+            {"message_control_address", std::to_string(value.owner.control_block_address)},
+            {"native_construction_executed", false}, {"send_executed", false}};
   } else if (feature == "send_result") {
     TextSendResultSnapshot value;
     status = ReadTextSendResultSnapshot(memory, identity, address, value);

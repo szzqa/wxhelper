@@ -74,6 +74,13 @@ def fixture():
     put(0xa000, "<QQB", 0xa100, 1, 1)
     put(0xa100, "<QQ", 0xa200, 0xa200)
     put(0xa200, "<QQQQ", 0xa100, 0xa100, 0x5018, 0xa300)
+    # Selected text factory shape: control + embedded object with self weak pair.
+    put(0xb800, "<QQ", 0xb010, 0xb000)
+    put(0xb000, "<QII", module + 0x8e534f8, 1, 2)
+    put(0xb010, "<QQQ", module + 0x8e53588, 0xb010, 0xb000)
+    put(0xb128, "<I", 1)
+    text(0xb0c0, "fixture_chat")
+    text(0xb768, "fixture text")
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,
@@ -88,7 +95,8 @@ def fixture():
                      {"feature": "contact_task", "address": "0x8600"},
                      {"feature": "receive_storage", "address": "0x8800"},
                      {"feature": "send_completion", "address": "0x7400"},
-                     {"feature": "contact_type_query", "address": "0xa000"}],
+                     {"feature": "contact_type_query", "address": "0xa000"},
+                     {"feature": "text_draft", "address": "0xb800", "module_base": hex(module)}],
     }
 
 
