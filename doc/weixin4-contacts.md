@@ -4,6 +4,8 @@
 
 入口 `ReadContactQuerySnapshot(memory, identity, result_address, output, limits)` 校验原始二进制身份，再读取已完成的查询结果。`query_succeeded=false` 表示结果未就绪/无有效值，不等同于成功查询零条联系人。读取或结构验证失败会清空整个输出，不返回部分成功列表。
 
+后续[查询契约复核](weixin4-contact-query-contract.md)进一步确认了按用户名列表处理、缓存/本地数据库/CGI 回退及会话聚合的边界。在线适配不能把这些调用直接当作无参数的纯本地全量枚举。
+
 ## 适用文件及证据来源
 
 - 原始文件：`C:\Program Files\Tencent\Weixin\4.1.15.13\Weixin.dll`。
