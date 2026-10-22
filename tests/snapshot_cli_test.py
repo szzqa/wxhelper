@@ -29,7 +29,7 @@ class SnapshotCliTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertFalse(output["runtime_supported"])
         self.assertFalse(output["snapshot_provenance_verified"])
-        login, contacts, task, sent, received, auth, contact_task = [r["data"] for r in output["results"]]
+        login, contacts, task, sent, received, auth, contact_task, storage = [r["data"] for r in output["results"]]
         self.assertEqual(login["state"], "unknown")
         self.assertEqual(login["kernel_stage_raw"], 1)
         self.assertEqual(login["kernel_phase"], "initialized")
@@ -67,6 +67,38 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(contact_task["usernames"], ["fixture_user", "fixture_peer"])
         self.assertFalse(contact_task["query_executed"])
         self.assertFalse(contact_task["all_contacts_verified"])
+        self.assertTrue(storage["storage_result_flag"])
+        self.assertEqual(storage["success_subset"], received["messages"])
+        self.assertFalse(storage["all_input_succeeded_verified"])
+        self.assertFalse(storage["realtime_notification_verified"])
+        self.assertFalse(storage["disk_durability_verified"])
+
+    def test_storage_result_is_not_whole_batch_success_or_notification(self):
+        for flag in (0, 1, 2, 255):
+            value = fixture()
+            value["requests"] = [{"feature": "receive_storage", "address": "0x8800"}]
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            memory[0x8818 - 0x1000] = flag
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            item = json.loads(result.stdout)["results"][0]
+            if flag > 1:
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(item["error"], "invalid_object")
+                self.assertNotIn("data", item)
+            else:
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIs(item["data"]["storage_result_flag"], bool(flag))
+                self.assertEqual(len(item["data"]["success_subset"]), 1)
+                self.assertFalse(item["data"]["all_input_succeeded_verified"])
+        struct.pack_into("<QQQB", memory, 0x8800 - 0x1000, 0, 0, 0, 1)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        item = json.loads(result.stdout)["results"][0]["data"]
+        self.assertTrue(item["storage_result_flag"])
+        self.assertEqual(item["success_subset"], [])
+        self.assertFalse(item["realtime_notification_verified"])
 
     def test_host_authentication_is_scoped_and_missing_is_distinct(self):
         for raw, name in ((0, "unknown"), (1, "idle_or_retryable"),

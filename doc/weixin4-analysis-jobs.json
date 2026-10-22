@@ -623,6 +623,69 @@
           "unwind_info_rva": "0x9d1b03c"
         }
       ]
+    },
+    "receive-contract-pass1": {
+      "functions": [
+        {
+          "start_rva": "0x3896ad0",
+          "end_rva": "0x3896bfd",
+          "seed": "AddMessageListToDBForSync waits/extracts per-category result before +24 completion byte"
+        },
+        {
+          "start_rva": "0x39364a0",
+          "end_rva": "0x39365ac",
+          "seed": "CoAddMessageToDB duplicate-svrid query task; result controls duplicate branch"
+        },
+        {
+          "start_rva": "0x39368c0",
+          "end_rva": "0x3936c16",
+          "seed": "CoAddMessageToDB post-dedupe task owns copied record at +0x70; DB insert/notification boundary"
+        },
+        {
+          "start_rva": "0x3963740",
+          "end_rva": "0x3963910",
+          "seed": "TaskInnerAddMessageListToDB pre-query task before duplicate-svrid-query marker"
+        },
+        {
+          "start_rva": "0x3964130",
+          "end_rva": "0x39646ac",
+          "seed": "TaskInnerAddMessageListToDB task between query-duplicate and filter-duplicate markers"
+        },
+        {
+          "start_rva": "0x3964f30",
+          "end_rva": "0x3965a39",
+          "seed": "TaskInnerAddMessageListToDB post-filter task, result vector+24 boolean returned"
+        }
+      ]
+    },
+    "receive-contract-pass2": {
+      "functions": [
+        {
+          "start_rva": "0x1538fb0",
+          "end_rva": "0x15399bb",
+          "seed": "Single DB operation called by39368C0; result only logged before completion record"
+        },
+        {
+          "start_rva": "0x153b950",
+          "end_rva": "0x153d515",
+          "seed": "Batch DB operation called by3964F30; per-session byte outcomes determine subset and OR flag"
+        },
+        {
+          "start_rva": "0x15477c0",
+          "end_rva": "0x1547d43",
+          "seed": "Single svrid/peer duplicate check callee of39364A0"
+        },
+        {
+          "start_rva": "0x3936d30",
+          "end_rva": "0x3936de8",
+          "seed": "Single task record completion wrapper; distinguish promise fulfillment from listener notification"
+        },
+        {
+          "start_rva": "0x3961d50",
+          "end_rva": "0x3962233",
+          "seed": "Batch duplicate predicate peer+svrid lookup in pre-query results"
+        }
+      ]
     }
   }
 }

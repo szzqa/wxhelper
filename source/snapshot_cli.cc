@@ -3,6 +3,7 @@
 #include "weixin4/auth_backend.h"
 #include "weixin4/login_backend.h"
 #include "weixin4/message_backend.h"
+#include "weixin4/receive_contract.h"
 
 #include <nlohmann/json.hpp>
 
@@ -91,6 +92,16 @@ json Contact(const ContactRecord& c) {
           {"chat_room_type", c.chat_room_type}};
 }
 
+json Message(const ReceiveRecordSnapshot& value) {
+  return {{"server_id", std::to_string(value.server_id)},
+          {"message_type", value.message_type}, {"sort_sequence", std::to_string(value.sort_sequence)},
+          {"time_raw", value.time_raw}, {"message_status", value.message_status},
+          {"upload_status", value.upload_status}, {"download_status", value.download_status},
+          {"origin_source", value.origin_source}, {"sender", value.sender},
+          {"from_username", value.from_username}, {"to_username", value.to_username},
+          {"content", value.content}};
+}
+
 json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& request) {
   const auto feature = request.at("feature").get<std::string>();
   const auto address = Address(request.at("address"));
@@ -147,14 +158,14 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
     status = ReadReceiveBatchSnapshot(memory, identity, address, values);
     data = {{"messages", json::array()}, {"content_decoded", true},
             {"content_semantics", "raw_native_string"}, {"direction_verified", false}};
-    for (const auto& value : values)
-      data["messages"].push_back({{"server_id", std::to_string(value.server_id)},
-          {"message_type", value.message_type}, {"sort_sequence", std::to_string(value.sort_sequence)},
-          {"time_raw", value.time_raw}, {"message_status", value.message_status},
-          {"upload_status", value.upload_status}, {"download_status", value.download_status},
-          {"origin_source", value.origin_source}, {"sender", value.sender},
-          {"from_username", value.from_username}, {"to_username", value.to_username},
-          {"content", value.content}});
+    for (const auto& value : values) data["messages"].push_back(Message(value));
+  } else if (feature == "receive_storage") {
+    ReceiveStorageResultSnapshot value;
+    status = ReadReceiveStorageResultSnapshot(memory, identity, address, value);
+    data = {{"storage_result_flag", value.storage_result_flag}, {"success_subset", json::array()},
+            {"all_input_succeeded_verified", false}, {"realtime_notification_verified", false},
+            {"disk_durability_verified", false}};
+    for (const auto& record : value.success_subset) data["success_subset"].push_back(Message(record));
   }
   json result = {{"feature", feature}, {"error", ReadErrorName(status)}};
   if (status == ReadError::None) result["data"] = std::move(data);
