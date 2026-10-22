@@ -29,8 +29,11 @@ class SnapshotCliTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertFalse(output["runtime_supported"])
         self.assertFalse(output["snapshot_provenance_verified"])
-        login, contacts, task, sent, received = [r["data"] for r in output["results"]]
+        login, contacts, task, sent, received, auth = [r["data"] for r in output["results"]]
         self.assertEqual(login["state"], "unknown")
+        self.assertEqual(login["kernel_stage_raw"], 1)
+        self.assertEqual(login["kernel_phase"], "initialized")
+        self.assertFalse(login["network_authentication_verified"])
         self.assertIs(login["logout_started"], False)
         self.assertEqual(login["account_lookup_key"], "fixture_user")
         self.assertEqual(contacts["contacts"][0]["nick_name"], "测试昵称")
@@ -55,6 +58,38 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(message["from_username"], "fixture_user")
         self.assertEqual(message["to_username"], "fixture_peer")
         self.assertEqual(message["content"], "测试正文")
+        self.assertEqual(auth["host"], "fixture.test")
+        self.assertTrue(auth["host_entry_present"])
+        self.assertEqual(auth["state_raw"], 3)
+        self.assertEqual(auth["state"], "success_recorded")
+        self.assertFalse(auth["global_login_verified"])
+        self.assertFalse(auth["connection_verified"])
+
+    def test_host_authentication_is_scoped_and_missing_is_distinct(self):
+        for raw, name in ((0, "unknown"), (1, "idle_or_retryable"),
+                          (2, "authenticating"), (3, "success_recorded"),
+                          (0xffffffff, "unknown")):
+            value = fixture()
+            value["requests"] = [value["requests"][-1]]
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            struct.pack_into("<I", memory, 0x9510 - 0x1000, raw)
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            auth = json.loads(result.stdout)["results"][0]["data"]
+            self.assertTrue(auth["host_entry_present"])
+            self.assertEqual(auth["state_raw"], raw)
+            self.assertEqual(auth["state"], name)
+            self.assertFalse(auth["global_login_verified"])
+        value = fixture()
+        value["requests"] = [value["requests"][-1]]
+        value["requests"][0]["host"] = "Fixture.test"
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        auth = json.loads(result.stdout)["results"][0]["data"]
+        self.assertFalse(auth["host_entry_present"])
+        self.assertIsNone(auth["state_raw"])
+        self.assertEqual(auth["state"], "unknown")
 
     def test_profile_mismatch_is_explicit(self):
         value = fixture()
@@ -83,6 +118,30 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         login = json.loads(result.stdout)["results"][0]["data"]
         self.assertIsNone(login["logout_started"])
+        self.assertEqual(login["state"], "unknown")
+
+    def test_kernel_stage_is_not_authentication(self):
+        for raw, phase in ((0, "unknown"), (1, "initialized"), (2, "login_flow"),
+                           (3, "setup_callback_complete"), (4, "logout_flow"),
+                           (0xffffffff, "unknown")):
+            value = fixture()
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            struct.pack_into("<I", memory, 0x1330 - 0x1000, raw)
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            login = json.loads(result.stdout)["results"][0]["data"]
+            self.assertEqual(login["kernel_stage_raw"], raw)
+            self.assertEqual(login["kernel_phase"], phase)
+            self.assertEqual(login["state"], "unknown")
+            self.assertFalse(login["network_authentication_verified"])
+        value = fixture()
+        value["segments"][1]["hex"] = "00" * 8
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        login = json.loads(result.stdout)["results"][0]["data"]
+        self.assertIsNone(login["kernel_stage_raw"])
+        self.assertEqual(login["kernel_phase"], "unknown")
         self.assertEqual(login["state"], "unknown")
 
     def test_overlapping_segments_are_rejected(self):

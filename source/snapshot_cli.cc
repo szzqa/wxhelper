@@ -1,4 +1,5 @@
 #include "weixin4/contact_backend.h"
+#include "weixin4/auth_backend.h"
 #include "weixin4/login_backend.h"
 #include "weixin4/message_backend.h"
 
@@ -103,6 +104,19 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
             {"service_flag38", value.service_flag38}, {"service_flag39", value.service_flag39},
             {"service_slot0_value", value.service_slot0_value}, {"account_lookup_key", value.account_lookup_key}};
     data["logout_started"] = value.logout_started.has_value() ? json(*value.logout_started) : json(nullptr);
+    data["kernel_stage_raw"] = value.kernel_stage_raw.has_value() ? json(*value.kernel_stage_raw) : json(nullptr);
+    data["kernel_phase"] = KernelPhaseName(value.kernel_phase);
+    data["network_authentication_verified"] = false;
+  } else if (feature == "auth_host") {
+    HostAuthObservation value;
+    const auto host = request.at("host").get<std::string>();
+    status = ReadHostAuthObservation(memory, identity, address, host, value);
+    data = {{"host", value.host}, {"state", HostAuthStateName(value.state)},
+            {"context_present", value.context_present}, {"service_present", value.service_present},
+            {"host_entry_present", value.host_entry_present},
+            {"bucket_entries_examined", value.bucket_entries_examined},
+            {"global_login_verified", false}, {"connection_verified", false}};
+    data["state_raw"] = value.state_raw.has_value() ? json(*value.state_raw) : json(nullptr);
   } else if (feature == "contacts") {
     ContactQuerySnapshot value;
     status = ReadContactQuerySnapshot(memory, identity, address, value);

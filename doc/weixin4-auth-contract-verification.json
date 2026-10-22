@@ -1,0 +1,218 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "login-auth-pass6.json",
+      "sha256": "33c340100b0dc8d7007ad54dba7b2c20bf4df9ee7d876ec221ae5d7a009e4af4",
+      "functions": [
+        {
+          "start_rva": "0x4d740",
+          "end_rva": "0x4d96a",
+          "instructions_matched": 131,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x368590",
+          "end_rva": "0x3686d5",
+          "instructions_matched": 73,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36fa70",
+          "end_rva": "0x36fcb9",
+          "instructions_matched": 137,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x66070",
+          "end_rva": "0x661fb",
+          "instructions_matched": 110,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x49c00",
+          "end_rva": "0x49cdd",
+          "instructions_matched": 71,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4c140",
+          "end_rva": "0x4ce64",
+          "instructions_matched": 708,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-kernel-phase.json",
+      "sha256": "0a80c9e9bda5d48fbed68227cd0aab200baffbb54f15891ce3414c353af5dc29",
+      "functions": [
+        {
+          "start_rva": "0x45510",
+          "end_rva": "0x457aa",
+          "instructions_matched": 147,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x53510",
+          "end_rva": "0x54f61",
+          "instructions_matched": 1402,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x67030",
+          "end_rva": "0x67536",
+          "instructions_matched": 290,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-auth-callbacks-pass1.json",
+      "sha256": "9dc5181724553c06b216eb5e730b349eb30f17039641d2150ca97566820e6084",
+      "functions": [
+        {
+          "start_rva": "0x345540",
+          "end_rva": "0x345af1",
+          "instructions_matched": 295,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x345ce0",
+          "end_rva": "0x345e9e",
+          "instructions_matched": 102,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x346930",
+          "end_rva": "0x346bf2",
+          "instructions_matched": 164,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x41d4c0",
+          "end_rva": "0x41d806",
+          "instructions_matched": 176,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x417650",
+          "end_rva": "0x41a1e7",
+          "instructions_matched": 2422,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-auth-callbacks-pass2.json",
+      "sha256": "a34ec01a5f53cb7bb6355d6ed7734b528234103584b3c105edc1afcb8e6e2db0",
+      "functions": [
+        {
+          "start_rva": "0x4f480",
+          "end_rva": "0x4f5d8",
+          "instructions_matched": 103,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x50f70",
+          "end_rva": "0x51035",
+          "instructions_matched": 65,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x345f00",
+          "end_rva": "0x3466b0",
+          "instructions_matched": 424,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3730c0",
+          "end_rva": "0x3733d9",
+          "instructions_matched": 185,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4bdbc0",
+          "end_rva": "0x4bde1e",
+          "instructions_matched": 133,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4bf9b0",
+          "end_rva": "0x4c001d",
+          "instructions_matched": 381,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-auth-callbacks-pass3.json",
+      "sha256": "d7191760a4a4055ec412365a3bbf534ade8d2501c2c79ec9fb7a167189b1d155",
+      "functions": [
+        {
+          "start_rva": "0x9185e0",
+          "end_rva": "0x9185e7",
+          "instructions_matched": 2,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xeda200",
+          "end_rva": "0xedab64",
+          "instructions_matched": 494,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xedaeb0",
+          "end_rva": "0xedb141",
+          "instructions_matched": 145,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xedb210",
+          "end_rva": "0xedb78b",
+          "instructions_matched": 361,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xedb920",
+          "end_rva": "0xedbb3e",
+          "instructions_matched": 142,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xedbc80",
+          "end_rva": "0xedcd55",
+          "instructions_matched": 969,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "login-auth-callbacks-pass4.json",
+      "sha256": "72ba99e643215e655ce249575490c9d948468457940d226a48550c7cad0a8746",
+      "functions": [
+        {
+          "start_rva": "0x370c20",
+          "end_rva": "0x37202f",
+          "instructions_matched": 1082,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x379020",
+          "end_rva": "0x379191",
+          "instructions_matched": 63,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 28,
+  "instruction_count": 10777,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}

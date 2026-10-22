@@ -20,6 +20,7 @@ def fixture():
 
     put(0x1000, "<Q", module + 0x8D804E8)
     put(0x1068, "<QQ", 0x2000, 0)
+    put(0x1330, "<I", 1)  # Kernel initialized; not an authentication assertion.
     put(0x2000, "<Q", module + 0x8DFE2F8)
     put(0x2038, "<BB", 1, 0)
     text(0x2048, "fixture_user")
@@ -47,6 +48,21 @@ def fixture():
     put(0x8150, "<Q", 0x123456789abcdef0)  # Sort sequence, not the server ID.
     put(0x8164, "<IIII", 5678, 2, 3, 4)
     put(0x8178, "<I", 5)
+    # One synthetic host-auth entry in an eight-bucket native-shaped map.
+    host = "fixture.test"
+    host_hash = 14695981039346656037
+    for byte in host.encode("utf-8"):
+        host_hash = ((host_hash ^ byte) * 1099511628211) & 0xffffffffffffffff
+    put(0x2510, "<QQQQQQQ", 0x9100, 1, 0x9200, 0x9280, 0x9280, 7, 8)
+    put(0x9100, "<QQ", 0x9300, 0x9300)
+    for bucket in range(8):
+        node = 0x9300 if bucket == (host_hash & 7) else 0x9100
+        put(0x9200 + bucket * 16, "<QQ", node, node)
+    put(0x9300, "<QQ", 0x9100, 0x9100)
+    text(0x9310, host)
+    put(0x9330, "<QQ", 0x9410, 0x9400)
+    put(0x9400, "<QII", module + 0x8DFEAD8, 1, 1)
+    put(0x9510, "<I", 3)
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,
@@ -56,7 +72,8 @@ def fixture():
                      {"address": hex(module + 0xb912690), "hex": struct.pack("<Q", 0x1000).hex()}],
         "requests": [{"feature": feature, "address": hex(address)} for feature, address in
                      (("login", module), ("contacts", 0x3000), ("send_task", 0x6000),
-                      ("send_result", 0x7200), ("receive_batch", 0x7800))],
+                      ("send_result", 0x7200), ("receive_batch", 0x7800))] +
+                    [{"feature": "auth_host", "address": hex(module), "host": host}],
     }
 
 

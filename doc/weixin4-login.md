@@ -2,7 +2,7 @@
 
 实现入口是 `src/weixin4/login_backend.h` 的 `ReadLoginObservation`。它从调用方提供的稳定快照读取根上下文、服务共享指针、两个标志字节及账号查询键，校验两个对象的虚表，并返回独立 DTO。它不打开进程、不注入、不调用微信内部函数，也不修改共享指针引用计数。
 
-已恢复登录服务的**对象布局、静态读取链和登出启动标志**。`LoginObservation::logout_started` 观察退出流程是否已经启动；`state` 始终为 `Unknown`，因为静态证据仍没有完整证明认证成功、离线重连或退出完成。账号查询键非空和服务存在均不能替代登录状态。
+已恢复登录服务的**对象布局、静态读取链、内核阶段和登出启动标志**。`kernel_stage_raw/kernel_phase` 描述初始化、登录流程、设置回调结束及退出流程；`logout_started` 观察退出启动。另有 `ReadHostAuthObservation` 按指定 host 读取认证对象，区分空闲/可重试、认证中、已记录成功。根读取器的全局 `state` 仍为 `Unknown`：这些局部状态不保证主账号认证新鲜度或网络连接。详见 [内核阶段](weixin4-login-auth-contract.md) 和 [host 认证契约](weixin4-network-auth-contract.md)。
 
 ## 二进制约束
 

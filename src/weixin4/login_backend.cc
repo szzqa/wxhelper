@@ -12,6 +12,16 @@ ReadError ReadPointerAt(const MemoryReader& memory, std::uint64_t object,
   if (!CheckedAdd(object, offset, address)) return ReadError::AddressOverflow;
   return ReadU64(memory, address, pointer);
 }
+
+KernelPhase DecodeKernelPhase(std::uint32_t raw) {
+  switch (raw) {
+    case 1: return KernelPhase::Initialized;
+    case 2: return KernelPhase::LoginFlow;
+    case 3: return KernelPhase::SetupCallbackComplete;
+    case 4: return KernelPhase::LogoutFlow;
+    default: return KernelPhase::Unknown;
+  }
+}
 }  // namespace
 
 ReadError ReadLoginObservation(const MemoryReader& memory,
@@ -39,6 +49,15 @@ ReadError ReadLoginObservation(const MemoryReader& memory,
   if (error != ReadError::None) return error;
   if (vtable != context_vtable) return ReadError::InvalidObject;
   observation.context_present = true;
+
+  std::uint64_t stage_address = 0;
+  if (!CheckedAdd(observation.context_address, login_layout::kKernelStageOffset,
+                  stage_address)) return ReadError::AddressOverflow;
+  std::uint32_t stage = 0;
+  error = ReadU32(memory, stage_address, stage);
+  if (error != ReadError::None) return error;
+  observation.kernel_stage_raw = stage;
+  observation.kernel_phase = DecodeKernelPhase(stage);
 
   error = ReadPointerAt(memory, observation.context_address,
                         login_layout::kServiceOffset, observation.service_address);
@@ -88,6 +107,17 @@ const char* LoginStateName(LoginState state) {
     case LoginState::Unknown: return "unknown";
     case LoginState::LoggedOut: return "logged_out";
     case LoginState::LoggedIn: return "logged_in";
+  }
+  return "unknown";
+}
+
+const char* KernelPhaseName(KernelPhase phase) {
+  switch (phase) {
+    case KernelPhase::Unknown: return "unknown";
+    case KernelPhase::Initialized: return "initialized";
+    case KernelPhase::LoginFlow: return "login_flow";
+    case KernelPhase::SetupCallbackComplete: return "setup_callback_complete";
+    case KernelPhase::LogoutFlow: return "logout_flow";
   }
   return "unknown";
 }

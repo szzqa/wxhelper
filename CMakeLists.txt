@@ -24,6 +24,7 @@ add_subdirectory(source)
 add_library(weixin4_snapshot STATIC
   src/weixin4/memory_reader.cc src/weixin4/profile.cc
   src/weixin4/contact_backend.cc src/weixin4/login_backend.cc
+  src/weixin4/auth_backend.cc
   src/weixin4/message_backend.cc)
 target_include_directories(weixin4_snapshot PUBLIC src)
 
@@ -127,6 +128,9 @@ if(BUILD_TESTING)
   target_link_libraries(weixin4_login_tests PRIVATE weixin4_snapshot)
   target_compile_options(weixin4_login_tests PRIVATE /UNDEBUG)
   add_test(NAME weixin4_login COMMAND weixin4_login_tests)
+  add_executable(weixin4_auth_tests tests/weixin4_auth_tests.cc)
+  target_link_libraries(weixin4_auth_tests PRIVATE weixin4_snapshot)
+  add_test(NAME weixin4_auth COMMAND weixin4_auth_tests)
   add_executable(weixin4_message_tests tests/weixin4_message_tests.cc)
   target_link_libraries(weixin4_message_tests PRIVATE weixin4_snapshot)
   add_test(NAME weixin4_messages COMMAND weixin4_message_tests)

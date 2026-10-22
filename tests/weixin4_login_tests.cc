@@ -30,6 +30,9 @@ class Snapshot final : public MemoryReader {
   void U64(std::uint64_t address, std::uint64_t value) {
     for (unsigned i = 0; i < 8; ++i) bytes[address + i] = (value >> (i * 8)) & 255;
   }
+  void U32(std::uint64_t address, std::uint32_t value) {
+    for (unsigned i = 0; i < 4; ++i) bytes[address + i] = (value >> (i * 8)) & 255;
+  }
   void String(std::uint64_t address, const std::string& value,
               std::uint64_t heap = 0) {
     for (unsigned i = 0; i < 32; ++i) bytes[address + i] = 0;
@@ -52,6 +55,7 @@ Snapshot Fixture(std::uint8_t flag38 = 1, std::uint8_t flag39 = 0) {
   Snapshot memory;
   memory.U64(kBase + login_layout::kContextPointerRva, kContext);
   memory.U64(kContext, kBase + login_layout::kContextVtableRva);
+  memory.U32(kContext + login_layout::kKernelStageOffset, 3);
   memory.U64(kContext + 0x68, kService);
   memory.U64(kContext + 0x70, kControl);
   memory.U64(kService, kBase + login_layout::kServiceVtableRva);
@@ -63,6 +67,8 @@ Snapshot Fixture(std::uint8_t flag38 = 1, std::uint8_t flag39 = 0) {
 
 void CheckCleared(const LoginObservation& value) {
   CHECK(value.state == LoginState::Unknown);
+  CHECK(!value.kernel_stage_raw.has_value());
+  CHECK(value.kernel_phase == KernelPhase::Unknown);
   CHECK(!value.context_present && !value.service_present && !value.has_service_flags);
   CHECK(value.context_address == 0 && value.service_address == 0);
   CHECK(value.service_control_address == 0 && value.account_lookup_key.empty());
@@ -83,6 +89,32 @@ int main() {
   CHECK(output.service_slot0_value && !output.service_field39_low_bit);
   CHECK(output.logout_started.has_value() && !*output.logout_started);
   CHECK(output.state == LoginState::Unknown);
+  CHECK(output.kernel_stage_raw == 3u);
+  CHECK(output.kernel_phase == KernelPhase::SetupCallbackComplete);
+
+  // Local stages can be observed with or without a login service. They cannot
+  // establish server authentication, including setup-complete stage 3.
+  struct StageCase { std::uint32_t raw; KernelPhase phase; const char* name; };
+  for (const auto& test : {
+         StageCase{0, KernelPhase::Unknown, "unknown"},
+         StageCase{1, KernelPhase::Initialized, "initialized"},
+         StageCase{2, KernelPhase::LoginFlow, "login_flow"},
+         StageCase{3, KernelPhase::SetupCallbackComplete, "setup_callback_complete"},
+         StageCase{4, KernelPhase::LogoutFlow, "logout_flow"},
+         StageCase{5, KernelPhase::Unknown, "unknown"},
+         StageCase{0xffffffffu, KernelPhase::Unknown, "unknown"}}) {
+    for (bool service_present : {false, true}) {
+      memory = Fixture();
+      memory.U32(kContext + login_layout::kKernelStageOffset, test.raw);
+      if (!service_present) memory.U64(kContext + 0x68, 0);
+      CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
+      CHECK(output.kernel_stage_raw == test.raw);
+      CHECK(output.kernel_phase == test.phase);
+      CHECK(std::string(KernelPhaseName(output.kernel_phase)) == test.name);
+      CHECK(output.service_present == service_present);
+      CHECK(output.state == LoginState::Unknown);
+    }
+  }
 
   // Flag getters mask the low bit; neither flag nor an account key establishes login.
   for (auto flags : {0, 1, 2, 255}) {
@@ -129,6 +161,7 @@ int main() {
   CHECK(output.context_present && !output.service_present && !output.has_service_flags);
   CHECK(output.service_control_address == kControl && output.state == LoginState::Unknown);
   CHECK(!output.logout_started.has_value());
+  CHECK(output.kernel_stage_raw == 3u);
 
   memory = Fixture();
   auto wrong = kIdentity;
@@ -149,6 +182,10 @@ int main() {
   CheckCleared(output);
 
   memory = Fixture();
+  memory.bytes.erase(kContext + login_layout::kKernelStageOffset + 3);
+  CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::Unreadable);
+  CheckCleared(output);
+  memory = Fixture();
   memory.bytes.erase(kService + 0x39);
   CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::Unreadable);
   CheckCleared(output);
@@ -163,6 +200,11 @@ int main() {
 
   const auto maximum = (std::numeric_limits<std::uint64_t>::max)();
   CHECK(ReadLoginObservation(memory, kIdentity, maximum, output) == ReadError::AddressOverflow);
+  memory = Fixture();
+  memory.U64(kBase + login_layout::kContextPointerRva, maximum - 16);
+  memory.U64(maximum - 16, kBase + login_layout::kContextVtableRva);
+  CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::AddressOverflow);
+  CheckCleared(output);
   memory = Fixture();
   memory.U64(kContext + 0x68, maximum - 16);
   memory.U64(maximum - 16, kBase + login_layout::kServiceVtableRva);
