@@ -7,7 +7,7 @@ import struct
 
 def fixture():
     module = 0x180000000
-    memory = bytearray(0x9000)
+    memory = bytearray(0xd000)
 
     def put(address, fmt, *values):
         struct.pack_into(fmt, memory, address - 0x1000, *values)
@@ -70,6 +70,10 @@ def fixture():
     put(0x9330, "<QQ", 0x9410, 0x9400)
     put(0x9400, "<QII", module + 0x8DFEAD8, 1, 1)
     put(0x9510, "<I", 3)
+    # Completed optional list of shared Contact records; not a full-address-book claim.
+    put(0xa000, "<QQB", 0xa100, 1, 1)
+    put(0xa100, "<QQ", 0xa200, 0xa200)
+    put(0xa200, "<QQQQ", 0xa100, 0xa100, 0x5018, 0xa300)
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,
@@ -83,7 +87,8 @@ def fixture():
                     [{"feature": "auth_host", "address": hex(module), "host": host},
                      {"feature": "contact_task", "address": "0x8600"},
                      {"feature": "receive_storage", "address": "0x8800"},
-                     {"feature": "send_completion", "address": "0x7400"}],
+                     {"feature": "send_completion", "address": "0x7400"},
+                     {"feature": "contact_type_query", "address": "0xa000"}],
     }
 
 

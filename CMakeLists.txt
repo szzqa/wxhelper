@@ -26,6 +26,7 @@ add_library(weixin4_snapshot STATIC
   src/weixin4/contact_backend.cc src/weixin4/login_backend.cc
   src/weixin4/auth_backend.cc
   src/weixin4/contact_contract.cc
+  src/weixin4/contact_enumeration.cc
   src/weixin4/receive_contract.cc
   src/weixin4/send_contract.cc
   src/weixin4/message_backend.cc)
@@ -130,6 +131,9 @@ if(BUILD_TESTING)
   add_executable(weixin4_contact_contract_tests tests/weixin4_contact_contract_tests.cc)
   target_link_libraries(weixin4_contact_contract_tests PRIVATE weixin4_snapshot)
   add_test(NAME weixin4_contact_contract COMMAND weixin4_contact_contract_tests)
+  add_executable(weixin4_contact_enumeration_tests tests/weixin4_contact_enumeration_tests.cc)
+  target_link_libraries(weixin4_contact_enumeration_tests PRIVATE weixin4_snapshot)
+  add_test(NAME weixin4_contact_enumeration COMMAND weixin4_contact_enumeration_tests)
   add_executable(weixin4_login_tests tests/weixin4_login_tests.cc)
   target_link_libraries(weixin4_login_tests PRIVATE weixin4_snapshot)
   target_compile_options(weixin4_login_tests PRIVATE /UNDEBUG)

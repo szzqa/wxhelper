@@ -1,4 +1,5 @@
 #include "contact_backend.h"
+#include "contact_record_reader.h"
 
 #include <algorithm>
 #include <unordered_set>
@@ -59,9 +60,12 @@ ReadError ReadLinks(const MemoryReader& memory, std::uint64_t address,
   return ReadError::None;
 }
 
-ReadError ReadRecord(const MemoryReader& memory, std::uint64_t address,
-                     ContactRecord& record, const Limits& limits,
-                     std::size_t& remaining) {
+}  // namespace
+
+namespace detail {
+ReadError ReadContactRecord(const MemoryReader& memory, std::uint64_t address,
+                            ContactRecord& record, const Limits& limits,
+                            std::size_t& remaining) {
   std::uint64_t last = 0;
   if (!CheckedAdd(address, 0x45f, last)) return ReadError::AddressOverflow;
   for (const auto& field : kIntegerFields) {
@@ -78,7 +82,7 @@ ReadError ReadRecord(const MemoryReader& memory, std::uint64_t address,
   }
   return ReadError::None;
 }
-}  // namespace
+}  // namespace detail
 
 ReadError ReadContactQuerySnapshot(const MemoryReader& memory,
                                    const BinaryIdentity& identity,
@@ -124,7 +128,7 @@ ReadError ReadContactQuerySnapshot(const MemoryReader& memory,
     error = ReadU32(memory, current + 0x10, key);
     if (error != ReadError::None) return error;
     ContactRecord record;
-    error = ReadRecord(memory, current + 0x18, record, limits, remaining);
+    error = detail::ReadContactRecord(memory, current + 0x18, record, limits, remaining);
     if (error != ReadError::None) return error;
     if (key != record.id || !ids.insert(key).second) return ReadError::InvalidObject;
     decoded.contacts.push_back(std::move(record));

@@ -33,7 +33,7 @@ ctest --test-dir out/build/snapshots -C Release --output-on-failure
 | 模块 | 可读取内容 | 仍未完成 |
 | --- | --- | --- |
 | [登录](weixin4-main-account-contract.md) | 本地 `kernel_is_login`、内核阶段、退出启动、账号查询键；指定 host 的认证状态与存在性 | 全局 `state` 保持 `unknown`；本地谓词与 host 成功记录均不保证当前主账号在线 |
-| [联系人](weixin4-contacts.md) | 已完成底层查询结果中的 13 个文本字段、8 个数值字段；[存储任务](weixin4-contact-native-contract.md)的用户名输入 | 不发起查询；上层聚合结果不能按底层 Contact map 读取；全量用户名来源未知 |
+| [联系人](weixin4-contact-enumeration.md) | 底层查询结果及按类型查询列表中的 13 个文本字段、8 个数值字段；[存储任务](weixin4-contact-native-contract.md)的用户名输入 | 不发起查询；列表结果存在不证明各表查询成功或完整账号集合；缓存与服务层有不同筛选 |
 | [消息](weixin4-messages.md) | 发送任务的会话 ID、调用结果；接收记录的原始正文、from/to/sender、类型、排序号、时间原值及状态字段 | 类型/状态枚举、时间单位和收发方向未验证；无在线收发 |
 
 ## 离线命令行
@@ -60,6 +60,7 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 | `auth_host` | 快照中的模块基址；请求另含精确匹配的 `host` 字符串 |
 | `contacts` | 已完成联系人查询结果的起点 |
 | `contact_task` | 已存在存储任务闭包的起点，仅读取其用户名输入 |
+| `contact_type_query` | 按 local_type 查询的完成输出，optional 链表头；`result_present` 区分无结果与有效空列表，不保证完整通讯录 |
 | `send_task` | 已存在发送任务 closure 的起点 |
 | `send_result` | 已存在任务结果的起点 |
 | `send_completion` | 已提取的 56 字节调用方结果；状态、原始字符串和不跟随的 payload 引用；参见[发送契约](weixin4-send-native-contract.md) |

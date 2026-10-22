@@ -801,6 +801,112 @@
           "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
         }
       ]
+    },
+    "full-contact-pass1": {
+      "functions": [
+        {
+          "start_rva": "0x2fb7510",
+          "end_rva": "0x2fb762a",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x1048c70",
+          "end_rva": "0x1048d3a",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x10494c0",
+          "end_rva": "0x104963f",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x3b2e710",
+          "end_rva": "0x3b2ed86",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x3eebd70",
+          "end_rva": "0x3eec734",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x2a744e0",
+          "end_rva": "0x2a75b5f",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "full-contact-pass2": {
+      "functions": [
+        {
+          "start_rva": "0x715dc0",
+          "end_rva": "0x716c36",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xfff5a0",
+          "end_rva": "0x10014a1",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x18a4990",
+          "end_rva": "0x18a5818",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xf25860",
+          "end_rva": "0xf259b2",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x2fabee0",
+          "end_rva": "0x2fac068",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x2fba9b0",
+          "end_rva": "0x2fbad04",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "full-contact-pass3": {
+      "functions": [
+        {
+          "start_rva": "0x26ea550",
+          "end_rva": "0x26eadeb",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xf24590",
+          "end_rva": "0xf25292",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xf26850",
+          "end_rva": "0xf2743c",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "full-contact-pass4": {
+      "functions": [
+        {
+          "start_rva": "0x26eb2a0",
+          "end_rva": "0x26eb3a8",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x270c730",
+          "end_rva": "0x270c81b",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x26eb3f0",
+          "end_rva": "0x26eb65e",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
     }
   }
 }

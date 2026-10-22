@@ -1,0 +1,146 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "full-contact-pass1.json",
+      "sha256": "49a0b351307e66da83389f643e60fe35ac2f53b4eff80d60e234be41548f6662",
+      "functions": [
+        {
+          "start_rva": "0x2fb7510",
+          "end_rva": "0x2fb762a",
+          "instructions_matched": 80,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1048c70",
+          "end_rva": "0x1048d3a",
+          "instructions_matched": 59,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x10494c0",
+          "end_rva": "0x104963f",
+          "instructions_matched": 103,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3b2e710",
+          "end_rva": "0x3b2ed86",
+          "instructions_matched": 432,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3eebd70",
+          "end_rva": "0x3eec734",
+          "instructions_matched": 598,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2a744e0",
+          "end_rva": "0x2a75b5f",
+          "instructions_matched": 1212,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "full-contact-pass2.json",
+      "sha256": "78c44716df4ed6650c2e607acebdb39f2dc5ce091a4288a47247161094a8bc09",
+      "functions": [
+        {
+          "start_rva": "0x715dc0",
+          "end_rva": "0x716c36",
+          "instructions_matched": 876,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xfff5a0",
+          "end_rva": "0x10014a1",
+          "instructions_matched": 1772,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x18a4990",
+          "end_rva": "0x18a5818",
+          "instructions_matched": 847,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xf25860",
+          "end_rva": "0xf259b2",
+          "instructions_matched": 95,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2fabee0",
+          "end_rva": "0x2fac068",
+          "instructions_matched": 115,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x2fba9b0",
+          "end_rva": "0x2fbad04",
+          "instructions_matched": 250,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "full-contact-pass3.json",
+      "sha256": "6c9288c09c1162f4519964e0db0e80c171b5e4303995b3299eb31bbedcb6f964",
+      "functions": [
+        {
+          "start_rva": "0x26ea550",
+          "end_rva": "0x26eadeb",
+          "instructions_matched": 496,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xf24590",
+          "end_rva": "0xf25292",
+          "instructions_matched": 780,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xf26850",
+          "end_rva": "0xf2743c",
+          "instructions_matched": 685,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "full-contact-pass4.json",
+      "sha256": "7eb26edfb275fcbc8142c2efd56d8841a093dd30218de1cadc891b503d11ffe1",
+      "functions": [
+        {
+          "start_rva": "0x26eb2a0",
+          "end_rva": "0x26eb3a8",
+          "instructions_matched": 52,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x270c730",
+          "end_rva": "0x270c81b",
+          "instructions_matched": 67,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x26eb3f0",
+          "end_rva": "0x26eb65e",
+          "instructions_matched": 150,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 18,
+  "instruction_count": 8669,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}

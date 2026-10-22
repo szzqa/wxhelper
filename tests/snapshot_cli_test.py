@@ -29,7 +29,7 @@ class SnapshotCliTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertFalse(output["runtime_supported"])
         self.assertFalse(output["snapshot_provenance_verified"])
-        login, contacts, task, sent, received, auth, contact_task, storage, completion = [r["data"] for r in output["results"]]
+        login, contacts, task, sent, received, auth, contact_task, storage, completion = [r["data"] for r in output["results"][:9]]
         self.assertEqual(login["state"], "unknown")
         self.assertEqual(login["kernel_stage_raw"], 1)
         self.assertEqual(login["kernel_phase"], "initialized")
@@ -78,6 +78,24 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(completion["payload_control_address"], "0")
         self.assertFalse(completion["delivery_verified"])
         self.assertFalse(completion["server_acknowledgement_verified"])
+
+    def test_contact_type_query_preserves_absent_and_valid_empty(self):
+        for present, count in ((1, 1), (1, 0), (0, 0)):
+            value = fixture()
+            value["requests"] = [{"feature": "contact_type_query", "address": "0xa000"}]
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            struct.pack_into("<QQB", memory, 0xa000 - 0x1000, 0xa100, count, present)
+            if not count:
+                struct.pack_into("<QQ", memory, 0xa100 - 0x1000, 0xa100, 0xa100)
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            query = json.loads(result.stdout)["results"][0]["data"]
+            self.assertIs(query["result_present"], bool(present))
+            self.assertEqual(len(query["contacts"]), count)
+            self.assertFalse(query["all_contacts_verified"])
+            self.assertFalse(query["query_executed"])
+            self.assertNotIn("query_succeeded", query)
 
     def test_send_completion_preserves_failure_words_and_opaque_payload(self):
         value = fixture()
