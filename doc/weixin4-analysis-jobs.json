@@ -686,6 +686,64 @@
           "seed": "Batch duplicate predicate peer+svrid lookup in pre-query results"
         }
       ]
+    },
+    "message-send-native-contract-pass1": {
+      "functions": [
+        {
+          "start_rva": "0x178f100",
+          "end_rva": "0x178f305",
+          "seed": "Known callee of completed 0x178f040; existing message-fn-178f100.asm.txt contains task allocation, owner-pair copies, submission, wait and result conversion. Recover full internal transaction; not a delivery acknowledgment.",
+          "pdata_record_rva": "0xbaac89c",
+          "unwind_info_rva": "0xa02b460"
+        },
+        {
+          "start_rva": "0x3981a30",
+          "end_rva": "0x3981d98",
+          "seed": "Direct call at 0x178f1ea in existing message-fn-178f100.asm.txt; task constructor receives body, message owner pair and flag. Recover object layout, owner adoption and virtual behavior.",
+          "pdata_record_rva": "0xbc66f40",
+          "unwind_info_rva": "0xa633e3c"
+        },
+        {
+          "start_rva": "0x1793050",
+          "end_rva": "0x17939d0",
+          "seed": "Direct call at 0x178f234 in existing message-fn-178f100.asm.txt; candidate task submission path using manager queue and task owner pair. Determine admission/result and cancellation contract.",
+          "pdata_record_rva": "0xbaacb24",
+          "unwind_info_rva": "0xa02bfec"
+        },
+        {
+          "start_rva": "0x1793c90",
+          "end_rva": "0x179541b",
+          "seed": "Direct call at 0x178f241 in existing message-fn-178f100.asm.txt; candidate wait/resume path receiving manager and task body+0x38. Recover required scheduler context, completion and failure states.",
+          "pdata_record_rva": "0xbaacba8",
+          "unwind_info_rva": "0xa02c23c"
+        },
+        {
+          "start_rva": "0x179cb90",
+          "end_rva": "0x179cdb3",
+          "seed": "Direct call at 0x178f279 in existing message-fn-178f100.asm.txt; converts task-held shared result to caller output. Establish transfer, cleanup and independent error-domain semantics.",
+          "pdata_record_rva": "0xbaad0c4",
+          "unwind_info_rva": "0xa02d7bc"
+        }
+      ]
+    },
+    "message-send-native-contract-pass2": {
+      "functions": [
+        {
+          "start_rva": "0x3987b30",
+          "end_rva": "0x3987b58",
+          "seed": "SendContext deleting destructor virtual slot at950a548; original pdata range"
+        },
+        {
+          "start_rva": "0x3987b60",
+          "end_rva": "0x3987d96",
+          "seed": "SendContext destructor body called at3987b3b; original pdata range"
+        },
+        {
+          "start_rva": "0xaee0",
+          "end_rva": "0xaeed",
+          "seed": "Control block first virtual slot90d8088; original dumpbin verified leaf13bytes, no pdata"
+        }
+      ]
     }
   }
 }

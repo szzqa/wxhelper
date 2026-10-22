@@ -4,6 +4,7 @@
 #include "weixin4/login_backend.h"
 #include "weixin4/message_backend.h"
 #include "weixin4/receive_contract.h"
+#include "weixin4/send_contract.h"
 
 #include <nlohmann/json.hpp>
 
@@ -153,6 +154,14 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
     status = ReadTextSendResultSnapshot(memory, identity, address, value);
     data = {{"status_word0", value.status_word0}, {"status_word1", value.status_word1},
             {"call_succeeded", value.call_succeeded}, {"delivery_verified", false}};
+  } else if (feature == "send_completion") {
+    TextSendCompletionSnapshot value;
+    status = ReadTextSendCompletionSnapshot(memory, identity, address, value);
+    data = {{"status_word0", value.status.status_word0}, {"status_word1", value.status.status_word1},
+            {"call_succeeded", value.status.call_succeeded}, {"detail_string", value.detail_string},
+            {"payload_object_address", std::to_string(value.payload_object_address)},
+            {"payload_control_address", std::to_string(value.payload_control_address)},
+            {"delivery_verified", false}, {"server_acknowledgement_verified", false}};
   } else if (feature == "receive_batch") {
     std::vector<ReceiveRecordSnapshot> values;
     status = ReadReceiveBatchSnapshot(memory, identity, address, values);

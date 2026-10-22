@@ -62,6 +62,7 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 | `contact_task` | 已存在存储任务闭包的起点，仅读取其用户名输入 |
 | `send_task` | 已存在发送任务 closure 的起点 |
 | `send_result` | 已存在任务结果的起点 |
+| `send_completion` | 已提取的 56 字节调用方结果；状态、原始字符串和不跟随的 payload 引用；参见[发送契约](weixin4-send-native-contract.md) |
 | `receive_batch` | 0x2e8 字节消息记录 vector 头的起点 |
 | `receive_storage` | 已提取的批量存储结果 payload；vector +0、标志 +0x18；参见[接收契约](weixin4-receive-native-contract.md) |
 

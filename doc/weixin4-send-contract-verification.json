@@ -1,0 +1,74 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "message-send-native-contract-pass1.json",
+      "sha256": "b3331bdf748d2d70dc6e251c860ecd07ade26ad90cc1e2b845c36babe2e62b07",
+      "functions": [
+        {
+          "start_rva": "0x178f100",
+          "end_rva": "0x178f305",
+          "instructions_matched": 161,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3981a30",
+          "end_rva": "0x3981d98",
+          "instructions_matched": 223,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1793050",
+          "end_rva": "0x17939d0",
+          "instructions_matched": 566,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1793c90",
+          "end_rva": "0x179541b",
+          "instructions_matched": 1333,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x179cb90",
+          "end_rva": "0x179cdb3",
+          "instructions_matched": 152,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-send-native-contract-pass2.json",
+      "sha256": "eebb7361abe45829054847e54f88c726170cc7d6ac744432c948cda4c0d5bf25",
+      "functions": [
+        {
+          "start_rva": "0x3987b30",
+          "end_rva": "0x3987b58",
+          "instructions_matched": 15,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3987b60",
+          "end_rva": "0x3987d96",
+          "instructions_matched": 176,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xaee0",
+          "end_rva": "0xaeed",
+          "instructions_matched": 4,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 8,
+  "instruction_count": 2630,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}

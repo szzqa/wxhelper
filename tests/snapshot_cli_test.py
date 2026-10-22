@@ -29,7 +29,7 @@ class SnapshotCliTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertFalse(output["runtime_supported"])
         self.assertFalse(output["snapshot_provenance_verified"])
-        login, contacts, task, sent, received, auth, contact_task, storage = [r["data"] for r in output["results"]]
+        login, contacts, task, sent, received, auth, contact_task, storage, completion = [r["data"] for r in output["results"]]
         self.assertEqual(login["state"], "unknown")
         self.assertEqual(login["kernel_stage_raw"], 1)
         self.assertEqual(login["kernel_phase"], "initialized")
@@ -72,6 +72,33 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertFalse(storage["all_input_succeeded_verified"])
         self.assertFalse(storage["realtime_notification_verified"])
         self.assertFalse(storage["disk_durability_verified"])
+        self.assertEqual(completion["detail_string"], "fixture detail")
+        self.assertTrue(completion["call_succeeded"])
+        self.assertEqual(completion["payload_object_address"], "0")
+        self.assertEqual(completion["payload_control_address"], "0")
+        self.assertFalse(completion["delivery_verified"])
+        self.assertFalse(completion["server_acknowledgement_verified"])
+
+    def test_send_completion_preserves_failure_words_and_opaque_payload(self):
+        value = fixture()
+        value["requests"] = [{"feature": "send_completion", "address": "0x7400"}]
+        memory = bytearray.fromhex(value["segments"][0]["hex"])
+        struct.pack_into("<II", memory, 0x7400 - 0x1000, 0xffffffff, 17)
+        struct.pack_into("<QQ", memory, 0x7428 - 0x1000, 0xfedcba9876543210, 0xabcdef9876543210)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        item = json.loads(result.stdout)["results"][0]["data"]
+        self.assertEqual(item["status_word0"], 0xffffffff)
+        self.assertEqual(item["status_word1"], 17)
+        self.assertFalse(item["call_succeeded"])
+        self.assertEqual(item["payload_object_address"], str(0xfedcba9876543210))
+        self.assertEqual(item["payload_control_address"], str(0xabcdef9876543210))
+        struct.pack_into("<Q", memory, 0x7418 - 0x1000, 16)  # size exceeds SSO capacity.
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 2)
+        self.assertNotIn("data", json.loads(result.stdout)["results"][0])
 
     def test_storage_result_is_not_whole_batch_success_or_notification(self):
         for flag in (0, 1, 2, 255):

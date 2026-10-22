@@ -2,6 +2,8 @@
 
 分支：`codex/weixin-4-offline-backends`。远端：`git@github.com:szzqa/wxhelper.git`。
 
+本页记录前一轮修复；后续原生契约适配及 19/19 回归结果见 [本阶段验证记录](native-contract-validation-2026-10-22.md)。
+
 本轮没有向微信注入、读取微信进程内存、调用微信内部函数或发送真实消息。注入器测试仅操作本项目自产的短命测试进程/DLL；HTTP/TCP 测试只访问自建的 loopback 对端。
 
 ## 分项提交

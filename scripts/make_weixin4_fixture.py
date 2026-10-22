@@ -38,6 +38,9 @@ def fixture():
     text(0x68b0, "fixture_chat")
     put(0x7008, "<II", 1, 1)
     put(0x7200, "<II", 0, 0)
+    put(0x7400, "<II", 0, 0)
+    text(0x7408, "fixture detail")
+    put(0x7428, "<QQ", 0, 0)
     put(0x7800, "<QQQ", 0x8000, 0x82e8, 0x85d0)
     text(0x8018, "fixture_user")
     text(0x8038, "fixture_peer")
@@ -79,7 +82,8 @@ def fixture():
                       ("send_result", 0x7200), ("receive_batch", 0x7800))] +
                     [{"feature": "auth_host", "address": hex(module), "host": host},
                      {"feature": "contact_task", "address": "0x8600"},
-                     {"feature": "receive_storage", "address": "0x8800"}],
+                     {"feature": "receive_storage", "address": "0x8800"},
+                     {"feature": "send_completion", "address": "0x7400"}],
     }
 
 

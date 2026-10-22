@@ -34,6 +34,8 @@ python scripts/make_weixin4_fixture.py --output out/synthetic-weixin4.json
 
 离线 CLI 的输入格式和具体参数以 [快照说明](weixin4-snapshots.md) 为准。它没有发送能力，输入是人工构造的记录。
 
+最新的 [原生契约验证记录](native-contract-validation-2026-10-22.md) 包含按 host 认证、联系人任务输入、接收成功子集和发送完成结果的合成测试。上述命令会同时测试这 9 个离线 feature；它们没有接到以下旧版 HTTP 路由。
+
 ## 后续注入计划（尚未执行）
 
 1. 用 `wxhelper_probe.exe <客户端DLL完整路径>` 检查版本与架构。4.1.15.13 当前会报告不支持；此时停止，不绕过检查。
