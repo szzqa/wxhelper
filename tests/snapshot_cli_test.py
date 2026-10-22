@@ -79,6 +79,27 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertFalse(completion["delivery_verified"])
         self.assertFalse(completion["server_acknowledgement_verified"])
 
+    def test_notification_copy_is_not_incoming_delivery_or_drain(self):
+        value = fixture()
+        value["requests"] = [
+            {"feature": "notification_dispatch", "address": "0xd000", "module_base": "0x180000000"},
+            {"feature": "receive_batch", "address": "0x7800"}]
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        results = json.loads(result.stdout)["results"]
+        dispatch = results[0]["data"]
+        self.assertEqual(dispatch["records"], results[1]["data"]["messages"])
+        self.assertEqual(dispatch["callback_function_address"], str(0x123456789abcdef0))
+        self.assertEqual(dispatch["source_classification"], "unknown")
+        for field in ("callback_executed", "realtime_incoming_verified", "disconnect_drains_queue_verified"):
+            self.assertFalse(dispatch[field])
+        memory = bytearray.fromhex(value["segments"][0]["hex"])
+        struct.pack_into("<Q", memory, 0xd000 - 0x1000, 0)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertNotIn("data", json.loads(result.stdout)["results"][0])
+
     def test_cancel_request_is_not_completion_or_callback_drain(self):
         for raw in (0, 1, 2, 255):
             value = fixture()

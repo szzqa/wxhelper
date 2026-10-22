@@ -1,5 +1,7 @@
 # 2026-10-22 原生契约适配验证
 
+这是上一批四项工作的记录。后续五项结果及当前测试数量见 [第二阶段验证记录](native-contract-stage2-validation.md)。
+
 分支 `codex/weixin-4-offline-backends`，推送远端 `git@github.com:szzqa/wxhelper.git`。本阶段继续 REA 留存证据复用和 IDA 定向静态分析，新增可测试的离线读取接口。**4.1.15.13 尚未达到在线兼容：没有注入微信、读取微信进程内存、调用其原生函数或发送真实消息。**
 
 ## 分项结果

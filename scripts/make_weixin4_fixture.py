@@ -88,6 +88,9 @@ def fixture():
         put(control, "<QII", module + 0x8f784d8, 1, 1)
         put(control + 0x10, "<Q", module + 0x8f78568)
         put(control + 0x188, "<BBBB", 1, 0, 0, 1)
+    put(0xd000, "<QQQ", module + 0x90d86e8, 0, 0x123456789abcdef0)
+    put(0xd048, "<QQQ", 0xd100, 0, 0)
+    put(0xd068, "<QQQ", 0x8000, 0x82e8, 0x85d0)
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,
@@ -104,7 +107,8 @@ def fixture():
                      {"feature": "send_completion", "address": "0x7400"},
                      {"feature": "contact_type_query", "address": "0xa000"},
                      {"feature": "text_draft", "address": "0xb800", "module_base": hex(module)},
-                     {"feature": "send_cancel_context", "address": "0xc000", "module_base": hex(module)}],
+                     {"feature": "send_cancel_context", "address": "0xc000", "module_base": hex(module)},
+                     {"feature": "notification_dispatch", "address": "0xd000", "module_base": hex(module)}],
     }
 
 

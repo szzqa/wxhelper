@@ -6,6 +6,7 @@
 #include "weixin4/message_backend.h"
 #include "weixin4/message_construction.h"
 #include "weixin4/receive_contract.h"
+#include "weixin4/notification_contract.h"
 #include "weixin4/send_contract.h"
 #include "weixin4/send_cancel_contract.h"
 
@@ -216,6 +217,19 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
     data = {{"messages", json::array()}, {"content_decoded", true},
             {"content_semantics", "raw_native_string"}, {"direction_verified", false}};
     for (const auto& value : values) data["messages"].push_back(Message(value));
+  } else if (feature == "notification_dispatch") {
+    NotificationDispatchSnapshot value;
+    status = ReadNotificationDispatchSnapshot(memory, identity,
+        Address(request.at("module_base")), address, value);
+    data = {{"callback_context_address", std::to_string(value.callback_context_address)},
+            {"callback_function_address", std::to_string(value.callback_function_address)},
+            {"scheduler_address", std::to_string(value.scheduler_address)},
+            {"lifetime_object_address", std::to_string(value.lifetime_owner.object_address)},
+            {"lifetime_control_address", std::to_string(value.lifetime_owner.control_block_address)},
+            {"records", json::array()}, {"source_classification", "unknown"},
+            {"callback_executed", false}, {"realtime_incoming_verified", false},
+            {"disconnect_drains_queue_verified", false}};
+    for (const auto& record : value.records) data["records"].push_back(Message(record));
   } else if (feature == "receive_storage") {
     ReceiveStorageResultSnapshot value;
     status = ReadReceiveStorageResultSnapshot(memory, identity, address, value);

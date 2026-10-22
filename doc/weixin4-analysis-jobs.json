@@ -1066,6 +1066,44 @@
           "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
         }
       ]
+    },
+    "message-notify-pass4": {
+      "functions": [
+        {
+          "start_rva": "0x494ad0",
+          "end_rva": "0x494c38",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x494920",
+          "end_rva": "0x494abd",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x1848120",
+          "end_rva": "0x18481da",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x472a80",
+          "end_rva": "0x472a93",
+          "seed": "Queue closure vtable 0x90d86e8 +0x10; leaf boundary from original dumpbin, not pdata; tail-jump through closure callback, subsequent CC padding."
+        }
+      ]
+    },
+    "message-notify-pass5": {
+      "functions": [
+        {
+          "start_rva": "0x4945b0",
+          "end_rva": "0x494759",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x4947c0",
+          "end_rva": "0x4948b6",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
     }
   }
 }

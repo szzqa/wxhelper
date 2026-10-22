@@ -68,6 +68,7 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 | `send_cancel_context` | SendContext 对象地址，另需 `module_base`；只观察阶段与两个作业的取消请求标记，不执行取消或承诺完成；参见[取消契约](weixin4-send-cancel-contract.md) |
 | `receive_batch` | 0x2e8 字节消息记录 vector 头的起点 |
 | `receive_storage` | 已提取的批量存储结果 payload；vector +0、标志 +0x18；参见[接收契约](weixin4-receive-native-contract.md) |
+| `notification_dispatch` | 已排队通知闭包地址，另需 `module_base`；复制消息记录与不透明回调观察值，不执行回调；来源分类未知，解除订阅不保证队列排空；参见[通知契约](weixin4-notification-contract.md) |
 
 片段不可重叠；每次对象读取范围必须落在单一片段内。JSON 文件最多 80 MiB，解码字节最多 32 MiB、片段最多 10,000、请求最多 32、嵌套最多 64 层。CLI 使用固定的默认对象读取预算。服务器 ID 以十进制字符串输出，避免 JavaScript 对大整数丢失精度；非法 UTF-8 字节在 JSON 展示中替换，库本身仍保留原始字节。
 

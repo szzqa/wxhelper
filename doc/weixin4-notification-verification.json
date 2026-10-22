@@ -1,0 +1,105 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "message-lifecycle-pass1.json",
+      "sha256": "faf20126b60fb37555611459aa7cadba2476c01803978b44680d1b52c97bf946",
+      "functions": [
+        {
+          "start_rva": "0x17b6c00",
+          "end_rva": "0x17b7565",
+          "instructions_matched": 537,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1811ff0",
+          "end_rva": "0x1812530",
+          "instructions_matched": 297,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-lifecycle-pass3.json",
+      "sha256": "c2977d3bfc1685f3c58c5ca354d7397120a32a3d2b10df69f78758f932b27d8a",
+      "functions": [
+        {
+          "start_rva": "0x17b79a0",
+          "end_rva": "0x17b8420",
+          "instructions_matched": 593,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17ed050",
+          "end_rva": "0x17ed11e",
+          "instructions_matched": 66,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17b8970",
+          "end_rva": "0x17b8dc3",
+          "instructions_matched": 261,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-notify-pass4.json",
+      "sha256": "63343a3c49e562f314f20462a3d9d108382e0779e806b6e6ecfcb2245164655c",
+      "functions": [
+        {
+          "start_rva": "0x494ad0",
+          "end_rva": "0x494c38",
+          "instructions_matched": 97,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x494920",
+          "end_rva": "0x494abd",
+          "instructions_matched": 112,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1848120",
+          "end_rva": "0x18481da",
+          "instructions_matched": 64,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x472a80",
+          "end_rva": "0x472a93",
+          "instructions_matched": 5,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-notify-pass5.json",
+      "sha256": "a77c960c4c9553272499908b324982642f6adbac13d4c973c1112ea08739f3ca",
+      "functions": [
+        {
+          "start_rva": "0x4945b0",
+          "end_rva": "0x494759",
+          "instructions_matched": 116,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x4947c0",
+          "end_rva": "0x4948b6",
+          "instructions_matched": 72,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 11,
+  "instruction_count": 2220,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ],
+  "scope": "Full report bytes verified first; this summary lists only functions used by notification. Report SHA-256 identifies the complete local file."
+}

@@ -34,7 +34,7 @@ python scripts/make_weixin4_fixture.py --output out/synthetic-weixin4.json
 
 离线 CLI 的输入格式和具体参数以 [快照说明](weixin4-snapshots.md) 为准。它没有发送能力，输入是人工构造的记录。
 
-最新的 [原生契约验证记录](native-contract-validation-2026-10-22.md) 包含按 host 认证、联系人任务输入、接收成功子集和发送完成结果的合成测试。上述命令会同时测试这 9 个离线 feature；它们没有接到以下旧版 HTTP 路由。
+最新的 [第二阶段原生契约验证记录](native-contract-stage2-validation.md) 包含本地登录谓词、按类型联系人查询结果、文本消息工厂产物、取消请求和排队通知闭包的合成测试。上述命令会同时测试 13 个离线 feature；它们没有接到以下旧版 HTTP 路由。
 
 ## 后续注入计划（尚未执行）
 
@@ -42,6 +42,8 @@ python scripts/make_weixin4_fixture.py --output out/synthetic-weixin4.json
 2. 4.x 适配需要分别验证登录状态含义、联系人查询上下文/容器及线程要求、消息对象构造/所有权/异步完成协议，再开放对应能力。每一步先静态证据和离线测试，实际注入与消息发送另等用户明确授权。
 3. 未来获准后，只选择明确 PID，使用重新构建的 x64 DLL 和注入器。历史 `tool/` 二进制不代表当前源码；不用 `-P` 或隐藏模块的 `-m`。
 4. 受支持版本的手动形式是 `injector.exe -I <PID> -p <DLL绝对路径>`。该命令加载 DLL 后后台自动启动；先查 health/capabilities，再查登录/联系人，最后才对自己控制的测试会话做一次发送验证。
+
+4.x 静态分析已确认：解除 signal 订阅不保证此前复制或排队的回调结束，发送作业的 `join` 也不是全部消息回调的排空屏障。未来运行时适配必须单独解决这些生命周期条件，不能直接沿用旧版接口名称推定其已安全停止。
 
 ## 对应接口
 

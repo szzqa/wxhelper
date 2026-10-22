@@ -29,6 +29,7 @@ add_library(weixin4_snapshot STATIC
   src/weixin4/contact_enumeration.cc
   src/weixin4/message_construction.cc
   src/weixin4/receive_contract.cc
+  src/weixin4/notification_contract.cc
   src/weixin4/send_contract.cc
   src/weixin4/send_cancel_contract.cc
   src/weixin4/message_backend.cc)
@@ -152,6 +153,9 @@ if(BUILD_TESTING)
   add_executable(weixin4_receive_contract_tests tests/weixin4_receive_contract_tests.cc)
   target_link_libraries(weixin4_receive_contract_tests PRIVATE weixin4_snapshot)
   add_test(NAME weixin4_receive_contract COMMAND weixin4_receive_contract_tests)
+  add_executable(weixin4_notification_tests tests/weixin4_notification_tests.cc)
+  target_link_libraries(weixin4_notification_tests PRIVATE weixin4_snapshot)
+  add_test(NAME weixin4_notification COMMAND weixin4_notification_tests)
   add_executable(weixin4_send_contract_tests tests/weixin4_send_contract_tests.cc)
   target_link_libraries(weixin4_send_contract_tests PRIVATE weixin4_snapshot)
   add_test(NAME weixin4_send_contract COMMAND weixin4_send_contract_tests)
