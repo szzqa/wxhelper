@@ -999,6 +999,73 @@
           "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
         }
       ]
+    },
+    "message-cancel-pass4": {
+      "functions": [
+        {
+          "start_rva": "0x2fb5b0",
+          "end_rva": "0x2fb842",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x17f26f0",
+          "end_rva": "0x17f2b66",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x17f33b0",
+          "end_rva": "0x17f3709",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x39dd30",
+          "end_rva": "0x39dec6",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "message-cancel-pass5": {
+      "functions": [
+        {
+          "start_rva": "0x2fa790",
+          "end_rva": "0x2fad99",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x3b4de0",
+          "end_rva": "0x3b521a",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xd816e0",
+          "end_rva": "0xd81a85",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xd81b60",
+          "end_rva": "0xd81e3f",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0xd80a00",
+          "end_rva": "0xd8112d",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x39dfd0",
+          "end_rva": "0x39e1ea",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "message-cancel-join": {
+      "functions": [
+        {
+          "start_rva": "0xd83660",
+          "end_rva": "0xd83f19",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
     }
   }
 }

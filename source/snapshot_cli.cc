@@ -7,6 +7,7 @@
 #include "weixin4/message_construction.h"
 #include "weixin4/receive_contract.h"
 #include "weixin4/send_contract.h"
+#include "weixin4/send_cancel_contract.h"
 
 #include <nlohmann/json.hpp>
 
@@ -116,6 +117,14 @@ std::string BytesHex(const std::string& bytes) {
   return output;
 }
 
+json CancelJob(const SendJobCancelObservation& job) {
+  return {{"present", job.present}, {"object_address", std::to_string(job.object_address)},
+          {"control_address", std::to_string(job.control_address)},
+          {"started_raw", job.started_raw}, {"active_raw", job.active_raw},
+          {"cancel_requested_raw", job.cancel_requested_raw},
+          {"started", job.started}, {"active", job.active}, {"cancel_requested", job.cancel_requested}};
+}
+
 json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& request) {
   const auto feature = request.at("feature").get<std::string>();
   const auto address = Address(request.at("address"));
@@ -184,6 +193,15 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
     status = ReadTextSendResultSnapshot(memory, identity, address, value);
     data = {{"status_word0", value.status_word0}, {"status_word1", value.status_word1},
             {"call_succeeded", value.call_succeeded}, {"delivery_verified", false}};
+  } else if (feature == "send_cancel_context") {
+    SendCancelContextSnapshot value;
+    status = ReadSendCancelContextSnapshot(memory, identity,
+        Address(request.at("module_base")), address, value);
+    data = {{"context_address", std::to_string(value.context_address)},
+            {"stage_raw", value.stage_raw}, {"dispatch", SendCancelDispatchName(value.dispatch)},
+            {"send_job", CancelJob(value.send_job)}, {"send_cgi_job", CancelJob(value.send_cgi_job)},
+            {"cancel_executed", false}, {"cancellation_completion_verified", false},
+            {"callbacks_drained_verified", false}};
   } else if (feature == "send_completion") {
     TextSendCompletionSnapshot value;
     status = ReadTextSendCompletionSnapshot(memory, identity, address, value);

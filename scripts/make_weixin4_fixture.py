@@ -81,6 +81,13 @@ def fixture():
     put(0xb128, "<I", 1)
     text(0xb0c0, "fixture_chat")
     text(0xb768, "fixture text")
+    put(0xc000, "<Q", module + 0x950a548)
+    put(0xc058, "<QQQQ", 0xc210, 0xc200, 0xc410, 0xc400)
+    put(0xc0bc, "<I", 4)  # Raw stage, not a cancellation enum.
+    for control in (0xc200, 0xc400):
+        put(control, "<QII", module + 0x8f784d8, 1, 1)
+        put(control + 0x10, "<Q", module + 0x8f78568)
+        put(control + 0x188, "<BBBB", 1, 0, 0, 1)
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,
@@ -96,7 +103,8 @@ def fixture():
                      {"feature": "receive_storage", "address": "0x8800"},
                      {"feature": "send_completion", "address": "0x7400"},
                      {"feature": "contact_type_query", "address": "0xa000"},
-                     {"feature": "text_draft", "address": "0xb800", "module_base": hex(module)}],
+                     {"feature": "text_draft", "address": "0xb800", "module_base": hex(module)},
+                     {"feature": "send_cancel_context", "address": "0xc000", "module_base": hex(module)}],
     }
 
 

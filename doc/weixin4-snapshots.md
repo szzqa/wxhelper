@@ -65,6 +65,7 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 | `text_draft` | 文本消息工厂产物的 `{object, control}` pair 地址，另需 `module_base`；正文参数字节同时提供 `text_argument_hex`，不执行构造或发送 |
 | `send_result` | 已存在任务结果的起点 |
 | `send_completion` | 已提取的 56 字节调用方结果；状态、原始字符串和不跟随的 payload 引用；参见[发送契约](weixin4-send-native-contract.md) |
+| `send_cancel_context` | SendContext 对象地址，另需 `module_base`；只观察阶段与两个作业的取消请求标记，不执行取消或承诺完成；参见[取消契约](weixin4-send-cancel-contract.md) |
 | `receive_batch` | 0x2e8 字节消息记录 vector 头的起点 |
 | `receive_storage` | 已提取的批量存储结果 payload；vector +0、标志 +0x18；参见[接收契约](weixin4-receive-native-contract.md) |
 

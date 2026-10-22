@@ -79,6 +79,30 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertFalse(completion["delivery_verified"])
         self.assertFalse(completion["server_acknowledgement_verified"])
 
+    def test_cancel_request_is_not_completion_or_callback_drain(self):
+        for raw in (0, 1, 2, 255):
+            value = fixture()
+            value["requests"] = [{"feature": "send_cancel_context", "address": "0xc000", "module_base": "0x180000000"}]
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            memory[0xc38b - 0x1000] = raw
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            context = json.loads(result.stdout)["results"][0]["data"]
+            self.assertEqual(context["dispatch"], "job_cancel_and_join")
+            self.assertEqual(context["send_job"]["cancel_requested_raw"], raw)
+            self.assertIs(context["send_job"]["cancel_requested"], bool(raw & 1))
+            for field in ("cancel_executed", "cancellation_completion_verified", "callbacks_drained_verified"):
+                self.assertFalse(context[field])
+        # No job pointer selects a lookup path, not an already-cancelled result.
+        struct.pack_into("<QQQQ", memory, 0xc058 - 0x1000, 0, 0, 0, 0)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        context = json.loads(result.stdout)["results"][0]["data"]
+        self.assertEqual(context["dispatch"], "prepare_show_lookup")
+        self.assertFalse(context["cancellation_completion_verified"])
+
     def test_text_draft_preserves_raw_argument_bytes_without_sending(self):
         value = fixture()
         value["requests"] = [{"feature": "text_draft", "address": "0xb800", "module_base": "0x180000000"}]

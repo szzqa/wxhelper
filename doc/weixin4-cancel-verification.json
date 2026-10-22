@@ -1,0 +1,153 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "message-lifecycle-pass1.json",
+      "sha256": "faf20126b60fb37555611459aa7cadba2476c01803978b44680d1b52c97bf946",
+      "functions": [
+        {
+          "start_rva": "0x3981f20",
+          "end_rva": "0x398429b",
+          "instructions_matched": 2131,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f0700",
+          "end_rva": "0x17f09ad",
+          "instructions_matched": 198,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f0a60",
+          "end_rva": "0x17f16e5",
+          "instructions_matched": 733,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-construction-pass2.json",
+      "sha256": "23f236359af714fa79bcad0e83b83c31da35c00ef35f9b6f07c63271fc58ab06",
+      "functions": [
+        {
+          "start_rva": "0x48bd30",
+          "end_rva": "0x48c5fa",
+          "instructions_matched": 514,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-lifecycle-pass3.json",
+      "sha256": "c2977d3bfc1685f3c58c5ca354d7397120a32a3d2b10df69f78758f932b27d8a",
+      "functions": [
+        {
+          "start_rva": "0x3987000",
+          "end_rva": "0x3987542",
+          "instructions_matched": 311,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f2fd0",
+          "end_rva": "0x17f32b2",
+          "instructions_matched": 168,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-cancel-pass4.json",
+      "sha256": "2b7dbc847e639ede9c206048dd03eda964e74057721fc24cb97c6246eecdad13",
+      "functions": [
+        {
+          "start_rva": "0x2fb5b0",
+          "end_rva": "0x2fb842",
+          "instructions_matched": 153,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f26f0",
+          "end_rva": "0x17f2b66",
+          "instructions_matched": 304,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x17f33b0",
+          "end_rva": "0x17f3709",
+          "instructions_matched": 228,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x39dd30",
+          "end_rva": "0x39dec6",
+          "instructions_matched": 104,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-cancel-pass5.json",
+      "sha256": "d0aa0899de4508b78b26879b3b9c04b94d9cc4cc149f6eaca2af1416ac784db6",
+      "functions": [
+        {
+          "start_rva": "0x2fa790",
+          "end_rva": "0x2fad99",
+          "instructions_matched": 366,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x3b4de0",
+          "end_rva": "0x3b521a",
+          "instructions_matched": 229,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xd816e0",
+          "end_rva": "0xd81a85",
+          "instructions_matched": 197,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xd81b60",
+          "end_rva": "0xd81e3f",
+          "instructions_matched": 159,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0xd80a00",
+          "end_rva": "0xd8112d",
+          "instructions_matched": 404,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x39dfd0",
+          "end_rva": "0x39e1ea",
+          "instructions_matched": 115,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-cancel-join.json",
+      "sha256": "93b747672e64545bcf7ab53f62bb2d4ed390bc1d04ac888d1b48f200be715286",
+      "functions": [
+        {
+          "start_rva": "0xd83660",
+          "end_rva": "0xd83f19",
+          "instructions_matched": 463,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 17,
+  "instruction_count": 6777,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ],
+  "scope": "Full report bytes verified first; this summary lists only functions used by cancel. Report SHA-256 identifies the complete local file."
+}
