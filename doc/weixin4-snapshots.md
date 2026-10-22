@@ -32,9 +32,9 @@ ctest --test-dir out/build/snapshots -C Release --output-on-failure
 
 | 模块 | 可读取内容 | 仍未完成 |
 | --- | --- | --- |
-| [登录](weixin4-login.md) | 根对象、服务对象、两虚表、生命周期标志、账号查询键 | `state` 保持 `unknown`；未确定真实认证/重连状态 |
+| [登录](weixin4-login.md) | 根对象、服务对象、两虚表、退出启动标志、账号查询键 | `state` 保持 `unknown`；未确定真实认证/重连状态 |
 | [联系人](weixin4-contacts.md) | 已完成查询结果中的 13 个文本字段、8 个数值字段 | 不发起查询；不保证是完整联系人列表 |
-| [消息](weixin4-messages.md) | 发送任务及调用结果、接收批次中的服务器 ID 和选定未命名字段 | 正文、类型、方向和时间未恢复；无在线收发 |
+| [消息](weixin4-messages.md) | 发送任务的会话 ID、调用结果；接收记录的原始正文、from/to/sender、类型、排序号、时间原值及状态字段 | 类型/状态枚举、时间单位和收发方向未验证；无在线收发 |
 
 ## 离线命令行
 
@@ -65,6 +65,8 @@ ctest --test-dir out/build/snapshot-cli -C Release --output-on-failure
 片段不可重叠；每次对象读取范围必须落在单一片段内。JSON 文件最多 80 MiB，解码字节最多 32 MiB、片段最多 10,000、请求最多 32、嵌套最多 64 层。CLI 使用固定的默认对象读取预算。服务器 ID 以十进制字符串输出，避免 JavaScript 对大整数丢失精度；非法 UTF-8 字节在 JSON 展示中替换，库本身仍保留原始字节。
 
 退出码：`0` 所有请求解析成功，`2` 某个请求读取/布局/profile 不匹配，`1` 输入或格式错误。成功仅代表解析成功；`runtime_supported`、`snapshot_provenance_verified` 始终为 `false`。错误请求不附带半成品数据。
+
+语义复核后，实验性消息字段 `unknown_message_string_b0` 更名为 `chat_id`，`unknown_u32_0c` 更名为 `message_type`，`unknown_string_18/38` 更名为 `from_username/to_username`。新增 `sender`、`content`、`sort_sequence`、`time_raw` 及原始状态字段。`content_decoded=true` 只表示已复制原生字符串；正文可能包含 XML 等结构，不承诺是纯文本。服务器 ID 和排序号均输出十进制字符串。`logout_started` 是可空布尔值，不能转换成在线/离线判断。
 
 ## 分析来源
 

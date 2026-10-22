@@ -57,7 +57,7 @@ Snapshot ValidSnapshot() {
   memory.U64(kClosure + 0x48, 0xa00);
   memory.U32(kControl + 8, 2);
   memory.U32(kControl + 12, 1);
-  memory.String(kMessage + 0xb0, "unresolved message diagnostic string", 0x1000);
+  memory.String(kMessage + 0xb0, "fixture-chat-xxxxxxxxxxxxxxxxxxxxxxx", 0x1000);
   return memory;
 }
 
@@ -67,14 +67,14 @@ void TaskTests() {
   Require(ReadTextSendTaskSnapshot(memory, kIdentity, kClosure, value) == ReadError::None,
           "valid task should decode");
   Require(value.call_id == "call-123" &&
-              value.unknown_message_string_b0 == "unresolved message diagnostic string",
+              value.chat_id == "fixture-chat-xxxxxxxxxxxxxxxxxxxxxxx",
           "inline and heap strings");
   Require(value.callback_context_address == 0x900 && value.manager_context_address == 0xa00 &&
               value.message.object_address == kMessage && value.message.has_control_block &&
               value.message.strong_count == 2 && value.message.weak_count == 1,
           "observed closure and ownership fields");
   memory.bytes.assign(memory.bytes.size(), 0);
-  Require(value.call_id == "call-123" && value.unknown_message_string_b0.size() == 36,
+  Require(value.call_id == "call-123" && value.chat_id.size() == 36,
           "decoded strings must own their storage");
 
   memory = ValidSnapshot();
@@ -177,6 +177,7 @@ void ReceiveTests() {
   constexpr std::size_t record0 = 0x400;
   constexpr std::size_t record1 = record0 + 0x2e8;
   constexpr std::uint64_t large_id = 0xfedcba9876543210ull;
+  const std::string content = u8"仅用于离线测试的消息正文";
   memory.U64(batch, record0);
   memory.U64(batch + 8, record1 + 0x2e8);
   memory.U64(batch + 16, record1 + 2 * 0x2e8);
@@ -184,38 +185,81 @@ void ReceiveTests() {
   memory.U64(record0 + 0x148, large_id);
   // A nearby field is not the server ID; the test must catch an 8-byte mistake.
   memory.U64(record0 + 0x150, 123);
+  memory.U32(record0 + 0x164, 0xf1234567);
+  memory.U32(record0 + 0x168, 0x80123456);
+  memory.U32(record0 + 0x16c, 0x91234567);
+  memory.U32(record0 + 0x170, 0xa2345678);
+  memory.U32(record0 + 0x174, 0xdeadbeef);  // Not origin_source.
+  memory.U32(record0 + 0x178, 0xb3456789);
   memory.String(record0 + 0x18, "alice");
   memory.String(record0 + 0x38, "bob");
+  memory.String(record0 + 0x58, "member-a");
+  memory.String(record0 + 0x180, content, 0x1800);
   memory.U32(record1 + 0x0c, 1);
   memory.U64(record1 + 0x148, 42);
+  memory.U64(record1 + 0x150, large_id);
   memory.String(record1 + 0x18, "long_endpoint_string", 0x1400);
   memory.String(record1 + 0x38, std::string("x\0y", 3));
+  memory.String(record1 + 0x58, "long_sender_identifier", 0x1600);
+  memory.String(record1 + 0x180, std::string("body\0tail", 9));
 
   ReceiveRecordSnapshot record;
   Require(ReadReceiveRecordSnapshot(memory, kIdentity, record0, record) == ReadError::None &&
-              record.server_id == large_id && record.unknown_u32_0c == 10000,
-          "full 64-bit server ID at proven offset");
+              record.server_id == large_id && record.message_type == 10000 &&
+              record.sort_sequence == 123 && record.time_raw == 0xf1234567 &&
+              record.sender == "member-a" && record.content == content &&
+              record.message_status == 0x80123456 &&
+              record.upload_status == 0x91234567 && record.download_status == 0xa2345678 &&
+              record.origin_source == 0xb3456789,
+          "proven message fields preserve unsigned widths and adjacent offsets");
   std::vector<ReceiveRecordSnapshot> values;
   Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values) == ReadError::None &&
               values.size() == 2 && values[1].server_id == 42 &&
-              values[1].unknown_string_18 == "long_endpoint_string" &&
-              values[1].unknown_string_38 == std::string("x\0y", 3),
+              values[1].from_username == "long_endpoint_string" &&
+              values[1].to_username == std::string("x\0y", 3) &&
+              values[1].sender == "long_sender_identifier" && values[1].sort_sequence == large_id &&
+              values[1].content == std::string("body\0tail", 9),
           "744-byte stride and capacity excluded from live rows");
   memory.bytes[0x1400] = 'z';
-  Require(values[1].unknown_string_18 == "long_endpoint_string", "receive strings are owned");
+  memory.bytes[0x1600] = 'z';
+  const auto first_content_byte = memory.bytes[0x1800];
+  memory.bytes[0x1800] = 'z';
+  Require(values[1].from_username == "long_endpoint_string" &&
+              values[1].sender == "long_sender_identifier" && values[0].content == content,
+          "receive strings and UTF-8 content are owned");
   memory.bytes[0x1400] = 'l';
+  memory.bytes[0x1600] = 'l';
+  memory.bytes[0x1800] = first_content_byte;
 
   Limits limits;
   limits.max_elements = 1;
   Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values, limits) == ReadError::LimitExceeded &&
               values.empty(), "receive batch element limit");
   limits.max_elements = 100;
-  limits.max_total_string_bytes = 30;
+  limits.max_total_string_bytes = 61 + content.size() + 9 - 1;
   Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values, limits) == ReadError::LimitExceeded &&
               values.empty(), "receive total budget shared across records");
-  limits.max_total_string_bytes = 31;
+  limits.max_total_string_bytes = 61 + content.size() + 9;
   Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values, limits) == ReadError::None,
           "receive exact budget");
+
+  memory.U64(record1 + 0x58 + 16, 1000);
+  Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values) == ReadError::InvalidString &&
+              values.empty(), "invalid sender discards the whole batch");
+  memory.String(record1 + 0x58, "long_sender_identifier", 0x1600);
+
+  memory.U64(record1 + 0x180 + 16, 16);
+  Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values) == ReadError::InvalidString &&
+              values.empty(), "invalid content discards the whole batch");
+  memory.String(record1 + 0x180, std::string("body\0tail", 9));
+  memory.U64(record0 + 0x180, memory.bytes.size() - 1);
+  Require(ReadReceiveRecordSnapshot(memory, kIdentity, record0, record) == ReadError::Unreadable &&
+              record.server_id == 0 && record.sender.empty() && record.content.empty(),
+          "unreadable heap content clears scalar and string outputs");
+  memory.String(record0 + 0x180, content, 0x1800);
+  limits.max_string_bytes = content.size() - 1;
+  Require(ReadReceiveRecordSnapshot(memory, kIdentity, record0, record, limits) == ReadError::LimitExceeded,
+          "content obeys the per-field string limit");
 
   memory.U64(record1 + 0x38 + 16, 16);
   Require(ReadReceiveBatchSnapshot(memory, kIdentity, batch, values) == ReadError::InvalidString &&

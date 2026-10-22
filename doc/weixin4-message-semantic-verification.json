@@ -1,0 +1,38 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "message-migration-semantic-pass4.json",
+      "sha256": "da1b07f58d237d6153fedaaa0a95205fd7608a4d63d969212bdf74be21078bf6",
+      "functions": [
+        {
+          "start_rva": "0xa55e70",
+          "end_rva": "0xa561b7",
+          "instructions_matched": 218,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "message-migration-semantic-pass5.json",
+      "sha256": "1427ccbb6f7a4bb781a1f1985f0767ff3b8eb40cef0c92ddb9a69e3a9ac9b8e2",
+      "functions": [
+        {
+          "start_rva": "0x1830c60",
+          "end_rva": "0x1831d41",
+          "instructions_matched": 886,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 2,
+  "instruction_count": 1104,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}

@@ -21,9 +21,9 @@ struct MessageReferenceSnapshot {
 // a supported send API. Both strings are copied out of the stable snapshot.
 struct TextSendTaskSnapshot {
   std::string call_id;
-  // The success log reads this string, but its semantic name is not established.
-  // It must not be exposed as recipient, body, or message ID without new evidence.
-  std::string unknown_message_string_b0;
+  // The success log labels message-object +0xb0 as chat_id. This does not
+  // establish a callable send interface or recipient/delivery validation.
+  std::string chat_id;
   std::uint64_t callback_context_address = 0;
   std::uint64_t manager_context_address = 0;
   MessageReferenceSnapshot message;
@@ -41,12 +41,26 @@ struct TextSendResultSnapshot {
 // This is not the full native object, and may not be passed back to the client.
 struct ReceiveRecordSnapshot {
   std::uint64_t server_id = 0;
-  // The accessor checks this word against 10000; its enum is not yet proven.
-  std::uint32_t unknown_u32_0c = 0;
-  // The peer accessor compares these strings to the current account. Their
-  // sender/recipient direction and payload semantics remain unproven.
-  std::string unknown_string_18;
-  std::string unknown_string_38;
+  // These names come from the record's diagnostic formatter. Enum values are
+  // preserved as raw integers; no legacy type/status mapping is assumed.
+  std::uint32_t message_type = 0;
+  std::uint64_t sort_sequence = 0;
+  // CoAddMessageToDB labels this value "time"; epoch and unit remain unknown.
+  std::uint32_t time_raw = 0;
+  std::uint32_t message_status = 0;
+  std::uint32_t upload_status = 0;
+  std::uint32_t download_status = 0;
+  std::uint32_t origin_source = 0;
+  // The formatter labels +0x58 "sender". Group-member and direction semantics
+  // have not been recovered, so this must not be used to infer incoming/outgoing.
+  std::string sender;
+  // A 744-byte replacement record receives these XML fromusername/tousername
+  // values. The ordinary sync record uses the same layout and peer accessor.
+  std::string from_username;
+  std::string to_username;
+  // Raw content bytes. Depending on message type this may be structured data;
+  // no text/XML/media interpretation or live message extraction is performed.
+  std::string content;
 };
 
 // These readers require a stable caller-owned snapshot with original-binary

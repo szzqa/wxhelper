@@ -10,8 +10,9 @@ namespace {
 // Evidence: message-migration-pass1.json, original Weixin.dll SHA kSha256.
 // RVA 0x54b1e10 closure: +0x38/+0x40 owner pair, +0x48 manager, +8 callback.
 // RVA 0x54b2022 and 0x54b20a1 pass the closure +0x18 string as the first log
-// argument; encoded format at RVA 0x9805f18 begins with "call_id=". The message
-// +0xb0 string is the second argument (RVA 0x54b1feb..0x54b201b).
+// argument; composite encoded format at RVA 0x9805f18 is "call_id=%_ Send text
+// message success, chat_id=%_" under the cross-checked XOR hypothesis. Message
+// +0xb0 is its second argument (RVA 0x54b1feb..0x54b201b).
 // RVA 0x178f040 increments control +8, decrements +8/+0xc, and returns the
 // caller-owned result buffer. These are snapshot layouts, not callable ABIs.
 constexpr std::uint64_t kCallId = 0x18;
@@ -19,7 +20,7 @@ constexpr std::uint64_t kMessageObject = 0x38;
 constexpr std::uint64_t kMessageControl = 0x40;
 constexpr std::uint64_t kManager = 0x48;
 constexpr std::uint64_t kCallback = 8;
-constexpr std::uint64_t kUnknownMessageString = 0xb0;
+constexpr std::uint64_t kChatId = 0xb0;
 constexpr std::size_t kReceiveRecordStride = 0x2e8;
 
 ReadError ReadAddress(const MemoryReader& memory, std::uint64_t base,
@@ -57,13 +58,36 @@ ReadError ReadReceiveRecord(const MemoryReader& memory, std::uint64_t address,
   // RVA 0x94fc828: "duplicate svrid:%_ in session:%_ with message:%_".
   auto error = ReadAddress(memory, address, 0x148, output.server_id);
   if (error != ReadError::None) return error;
-  error = ReadCount(memory, address, 0x0c, output.unknown_u32_0c);
+  // message-migration-semantic-pass4.json: 0xa55e70 formats these exact
+  // offsets after plaintext labels type/sort_seq/sender/status/origin_source.
+  error = ReadCount(memory, address, 0x0c, output.message_type);
   if (error != ReadError::None) return error;
-  // RVA 0xa55490 reads these fields, but does not establish direction/content.
-  error = ReadBudgetedString(memory, address, 0x18, output.unknown_string_18,
+  error = ReadAddress(memory, address, 0x150, output.sort_sequence);
+  if (error != ReadError::None) return error;
+  // CoAddMessageToDB reads +356, then formats it as the "time" argument at
+  // 0x94fca10. The log does not establish the time unit or epoch.
+  error = ReadCount(memory, address, 0x164, output.time_raw);
+  if (error != ReadError::None) return error;
+  error = ReadCount(memory, address, 0x168, output.message_status);
+  if (error != ReadError::None) return error;
+  error = ReadCount(memory, address, 0x16c, output.upload_status);
+  if (error != ReadError::None) return error;
+  error = ReadCount(memory, address, 0x170, output.download_status);
+  if (error != ReadError::None) return error;
+  error = ReadCount(memory, address, 0x178, output.origin_source);
+  if (error != ReadError::None) return error;
+  error = ReadBudgetedString(memory, address, 0x58, output.sender, limits, remaining);
+  if (error != ReadError::None) return error;
+  // message-migration-semantic-pass5.json: 0x1830c60 builds a 744-byte record,
+  // then copies fromusername/tousername/content into +0x18/+0x38/+0x180.
+  // The same record is passed to the proven peer accessor 0xa55490.
+  error = ReadBudgetedString(memory, address, 0x18, output.from_username,
                              limits, remaining);
   if (error != ReadError::None) return error;
-  return ReadBudgetedString(memory, address, 0x38, output.unknown_string_38,
+  error = ReadBudgetedString(memory, address, 0x38, output.to_username,
+                             limits, remaining);
+  if (error != ReadError::None) return error;
+  return ReadBudgetedString(memory, address, 0x180, output.content,
                             limits, remaining);
 }
 
@@ -117,8 +141,7 @@ ReadError ReadTextSendTaskSnapshot(const MemoryReader& memory,
                              limits, remaining);
   if (error != ReadError::None) return error;
   error = ReadBudgetedString(memory, value.message.object_address,
-                             kUnknownMessageString,
-                             value.unknown_message_string_b0, limits, remaining);
+                             kChatId, value.chat_id, limits, remaining);
   if (error != ReadError::None) return error;
   output = std::move(value);
   return ReadError::None;

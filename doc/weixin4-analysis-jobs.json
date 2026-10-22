@@ -363,6 +363,24 @@
           "seed": "Root context method invoked before WaitForLastLogout during Quit"
         }
       ]
+    },
+    "message-migration-semantic-pass4": {
+      "functions": [
+        {
+          "start_rva": "0xa55e70",
+          "end_rva": "0xa561b7",
+          "seed": "Receive-record description formatter passed to CoAddMessageToDB log; seek type/body/time/from/to fields"
+        }
+      ]
+    },
+    "message-migration-semantic-pass5": {
+      "functions": [
+        {
+          "start_rva": "0x1830c60",
+          "end_rva": "0x1831d41",
+          "seed": "MessageManager::HandleReplaceMsgNotice references content/msgtype/fromusername/tousername and 4 raw calls to proven 0xa55490; trace setters to shared receive-record layout (special msg replacement, not generic live support)"
+        }
+      ]
     }
   }
 }

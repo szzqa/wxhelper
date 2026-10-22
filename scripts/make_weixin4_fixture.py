@@ -34,14 +34,19 @@ def fixture():
     text(0x50f0, "测试昵称")
     text(0x6018, "fixture_call")
     put(0x6038, "<QQQ", 0x6800, 0x7000, 0x7100)
-    text(0x68b0, "unknown_field")
+    text(0x68b0, "fixture_chat")
     put(0x7008, "<II", 1, 1)
     put(0x7200, "<II", 0, 0)
     put(0x7800, "<QQQ", 0x8000, 0x82e8, 0x85d0)
     text(0x8018, "fixture_user")
     text(0x8038, "fixture_peer")
+    text(0x8058, "fixture_sender")
+    text(0x8180, "测试正文")
+    put(0x800c, "<I", 12345)  # Raw type value, not a claimed native enum member.
     put(0x8148, "<Q", 0xfedcba9876543210)
-    put(0x8150, "<Q", 1234)  # An adjacent field is not the server ID.
+    put(0x8150, "<Q", 0x123456789abcdef0)  # Sort sequence, not the server ID.
+    put(0x8164, "<IIII", 5678, 2, 3, 4)
+    put(0x8178, "<I", 5)
     return {
         "format": "weixin4_snapshot_v1",
         "synthetic": True,

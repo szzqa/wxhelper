@@ -111,7 +111,7 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
   } else if (feature == "send_task") {
     TextSendTaskSnapshot value;
     status = ReadTextSendTaskSnapshot(memory, identity, address, value);
-    data = {{"call_id", value.call_id}, {"unknown_message_string_b0", value.unknown_message_string_b0},
+    data = {{"call_id", value.call_id}, {"chat_id", value.chat_id},
             {"manager_context_address", value.manager_context_address},
             {"callback_context_address", value.callback_context_address},
             {"message_object_address", value.message.object_address},
@@ -126,11 +126,16 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
   } else if (feature == "receive_batch") {
     std::vector<ReceiveRecordSnapshot> values;
     status = ReadReceiveBatchSnapshot(memory, identity, address, values);
-    data = {{"messages", json::array()}, {"content_decoded", false}};
+    data = {{"messages", json::array()}, {"content_decoded", true},
+            {"content_semantics", "raw_native_string"}, {"direction_verified", false}};
     for (const auto& value : values)
       data["messages"].push_back({{"server_id", std::to_string(value.server_id)},
-          {"unknown_u32_0c", value.unknown_u32_0c},
-          {"unknown_string_18", value.unknown_string_18}, {"unknown_string_38", value.unknown_string_38}});
+          {"message_type", value.message_type}, {"sort_sequence", std::to_string(value.sort_sequence)},
+          {"time_raw", value.time_raw}, {"message_status", value.message_status},
+          {"upload_status", value.upload_status}, {"download_status", value.download_status},
+          {"origin_source", value.origin_source}, {"sender", value.sender},
+          {"from_username", value.from_username}, {"to_username", value.to_username},
+          {"content", value.content}});
   }
   json result = {{"feature", feature}, {"error", ReadErrorName(status)}};
   if (status == ReadError::None) result["data"] = std::move(data);
