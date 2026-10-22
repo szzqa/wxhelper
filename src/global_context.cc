@@ -32,7 +32,7 @@ void GlobalContext::initialize(HMODULE module) {
     config.emplace();
     config->Initialize();
     log.emplace();
-    log->Initialize();
+    log->Initialize(config->GetLogPath());
     if (!ThreadPool::GetInstance().Create(2, 8)) {
       throw std::runtime_error("Failed to create wxhelper thread pool.");
     }

@@ -147,6 +147,8 @@ int Run(int argc, wchar_t** argv) {
   // Retain artifacts: the pinned DLL owns its log file until process teardown.
   std::wcout << L"Startup artifacts: " << work_directory.wstring() << std::endl;
   CurrentDirectory directory(work_directory);
+  if (!SetEnvironmentVariableW(L"WXHELPER_DATA_DIR", work_directory.c_str()))
+    return Fail(2, "Cannot set isolated helper data directory.", GetLastError());
   Winsock winsock;
 
   Socket reservation;
