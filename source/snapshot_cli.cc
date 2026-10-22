@@ -117,6 +117,7 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
             {"service_flag38", value.service_flag38}, {"service_flag39", value.service_flag39},
             {"service_slot0_value", value.service_slot0_value}, {"account_lookup_key", value.account_lookup_key}};
     data["logout_started"] = value.logout_started.has_value() ? json(*value.logout_started) : json(nullptr);
+    data["kernel_is_login"] = value.kernel_is_login.has_value() ? json(*value.kernel_is_login) : json(nullptr);
     data["kernel_stage_raw"] = value.kernel_stage_raw.has_value() ? json(*value.kernel_stage_raw) : json(nullptr);
     data["kernel_phase"] = KernelPhaseName(value.kernel_phase);
     data["network_authentication_verified"] = false;

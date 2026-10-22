@@ -223,6 +223,34 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(login["kernel_phase"], "unknown")
         self.assertEqual(login["state"], "unknown")
 
+    def test_kernel_login_predicate_is_not_network_authentication(self):
+        for flag in (0, 1, 2, 255):
+            value = fixture()
+            value["requests"] = value["requests"][:1]
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            memory[0x2038 - 0x1000] = flag
+            memory[0x2039 - 0x1000] = 1  # Logout may already have started.
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            login = json.loads(result.stdout)["results"][0]["data"]
+            self.assertIs(login["kernel_is_login"], bool(flag & 1))
+            self.assertEqual(login["state"], "unknown")
+            self.assertFalse(login["network_authentication_verified"])
+        for root_present in (False, True):
+            value = fixture()
+            value["requests"] = value["requests"][:1]
+            if root_present:
+                memory = bytearray.fromhex(value["segments"][0]["hex"])
+                struct.pack_into("<Q", memory, 0x1068 - 0x1000, 0)
+                value["segments"][0]["hex"] = memory.hex()
+            else:
+                value["segments"][1]["hex"] = "00" * 8
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            login = json.loads(result.stdout)["results"][0]["data"]
+            self.assertIs(login["kernel_is_login"], False if root_present else None)
+
     def test_overlapping_segments_are_rejected(self):
         value = fixture()
         value["segments"].append(copy.deepcopy(value["segments"][0]))

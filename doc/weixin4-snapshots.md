@@ -32,7 +32,7 @@ ctest --test-dir out/build/snapshots -C Release --output-on-failure
 
 | 模块 | 可读取内容 | 仍未完成 |
 | --- | --- | --- |
-| [登录](weixin4-login.md) | 内核阶段、退出启动、账号查询键；指定 host 的认证状态与存在性 | 全局 `state` 保持 `unknown`；host 成功记录不保证当前主账号在线 |
+| [登录](weixin4-main-account-contract.md) | 本地 `kernel_is_login`、内核阶段、退出启动、账号查询键；指定 host 的认证状态与存在性 | 全局 `state` 保持 `unknown`；本地谓词与 host 成功记录均不保证当前主账号在线 |
 | [联系人](weixin4-contacts.md) | 已完成底层查询结果中的 13 个文本字段、8 个数值字段；[存储任务](weixin4-contact-native-contract.md)的用户名输入 | 不发起查询；上层聚合结果不能按底层 Contact map 读取；全量用户名来源未知 |
 | [消息](weixin4-messages.md) | 发送任务的会话 ID、调用结果；接收记录的原始正文、from/to/sender、类型、排序号、时间原值及状态字段 | 类型/状态枚举、时间单位和收发方向未验证；无在线收发 |
 

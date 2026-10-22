@@ -31,6 +31,11 @@ enum class KernelPhase {
 struct LoginObservation {
   // Authentication semantics of the observed flags are not established yet.
   LoginState state = LoginState::Unknown;
+  // Native kernel::IsLogin predicate: root vtable+0x68 -> service vtable+0
+  // -> service byte +0x38 & 1. A verified root without a service returns false;
+  // a missing root leaves this disengaged. This local-context predicate does
+  // not establish server authentication, connection health, or logout completion.
+  std::optional<bool> kernel_is_login;
   // Root +0x330 is a 32-bit value written by SetKernelStage (RVA 0x45510).
   // A missing root leaves raw disengaged. Unrecognized values remain observable
   // as raw data with phase Unknown; none of these values changes state.

@@ -67,6 +67,7 @@ Snapshot Fixture(std::uint8_t flag38 = 1, std::uint8_t flag39 = 0) {
 
 void CheckCleared(const LoginObservation& value) {
   CHECK(value.state == LoginState::Unknown);
+  CHECK(!value.kernel_is_login.has_value());
   CHECK(!value.kernel_stage_raw.has_value());
   CHECK(value.kernel_phase == KernelPhase::Unknown);
   CHECK(!value.context_present && !value.service_present && !value.has_service_flags);
@@ -89,6 +90,7 @@ int main() {
   CHECK(output.service_slot0_value && !output.service_field39_low_bit);
   CHECK(output.logout_started.has_value() && !*output.logout_started);
   CHECK(output.state == LoginState::Unknown);
+  CHECK(output.kernel_is_login == true);
   CHECK(output.kernel_stage_raw == 3u);
   CHECK(output.kernel_phase == KernelPhase::SetupCallbackComplete);
 
@@ -112,16 +114,20 @@ int main() {
       CHECK(output.kernel_phase == test.phase);
       CHECK(std::string(KernelPhaseName(output.kernel_phase)) == test.name);
       CHECK(output.service_present == service_present);
+      CHECK(output.kernel_is_login.has_value());
+      CHECK(*output.kernel_is_login == service_present);
       CHECK(output.state == LoginState::Unknown);
     }
   }
 
-  // Flag getters mask the low bit; neither flag nor an account key establishes login.
+  // The local IsLogin predicate masks the low bit, independently of auth state.
   for (auto flags : {0, 1, 2, 255}) {
     memory = Fixture(static_cast<std::uint8_t>(flags), static_cast<std::uint8_t>(flags));
     CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
     CHECK(output.service_flag38 == flags && output.service_flag39 == flags);
     CHECK(output.service_slot0_value == ((flags & 1) != 0));
+    CHECK(output.kernel_is_login.has_value());
+    CHECK(*output.kernel_is_login == ((flags & 1) != 0));
     CHECK(output.service_field39_low_bit == ((flags & 1) != 0));
     CHECK(output.logout_started.has_value());
     CHECK(*output.logout_started == ((flags & 1) != 0));
@@ -134,6 +140,20 @@ int main() {
   CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
   CHECK(output.logout_started == true);
   CHECK(output.service_slot0_value && !output.account_lookup_key.empty());
+  CHECK(output.kernel_is_login == true);
+  CHECK(output.state == LoginState::Unknown);
+
+  // The predicate follows its native getter, not the account key or stage.
+  memory = Fixture(0, 0);
+  CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
+  CHECK(!output.account_lookup_key.empty());
+  CHECK(output.kernel_is_login == false);
+  CHECK(output.state == LoginState::Unknown);
+  memory = Fixture(1, 0);
+  memory.String(kService + 0x48, "");
+  CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
+  CHECK(output.account_lookup_key.empty());
+  CHECK(output.kernel_is_login == true);
   CHECK(output.state == LoginState::Unknown);
 
   memory = Fixture();
@@ -160,6 +180,7 @@ int main() {
   CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
   CHECK(output.context_present && !output.service_present && !output.has_service_flags);
   CHECK(output.service_control_address == kControl && output.state == LoginState::Unknown);
+  CHECK(output.kernel_is_login == false);
   CHECK(!output.logout_started.has_value());
   CHECK(output.kernel_stage_raw == 3u);
 

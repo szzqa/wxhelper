@@ -67,6 +67,8 @@ ReadError ReadLoginObservation(const MemoryReader& memory,
                         observation.service_control_address);
   if (error != ReadError::None) return error;
   if (!observation.service_address) {
+    // Native root getter RVA 0x4FFD0 explicitly returns zero for no service.
+    observation.kernel_is_login = false;
     output = std::move(observation);
     return ReadError::None;
   }
@@ -84,6 +86,8 @@ ReadError ReadLoginObservation(const MemoryReader& memory,
   observation.service_flag38 = flags[0];
   observation.service_flag39 = flags[1];
   observation.service_slot0_value = (flags[0] & 1) != 0;
+  // Consumers 0x9137C0 and 0x1D4EB30 identify this predicate as IsLogin.
+  observation.kernel_is_login = observation.service_slot0_value;
   observation.service_field39_low_bit = (flags[1] & 1) != 0;
   // Writer RVA 0x3badbb (XCHG byte +0x39, 1) and consumer 0x4bc2f0
   // establish logout initiation, independently of authentication completion.

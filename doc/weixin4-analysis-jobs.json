@@ -744,6 +744,63 @@
           "seed": "Control block first virtual slot90d8088; original dumpbin verified leaf13bytes, no pdata"
         }
       ]
+    },
+    "main-account-pass1": {
+      "functions": [
+        {
+          "start_rva": "0x41b250",
+          "end_rva": "0x41b3c0",
+          "seed": "OnSessionTimeOut: main account expiry branch"
+        },
+        {
+          "start_rva": "0x36b620",
+          "end_rva": "0x36bab3",
+          "seed": "CoClearAxAuth: clear/invalidate existing per-host states"
+        }
+      ]
+    },
+    "main-account-consumers": {
+      "functions": [
+        {
+          "start_rva": "0x9137c0",
+          "end_rva": "0x913914",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x1e1ecf0",
+          "end_rva": "0x1e1eeeb",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x1d4eb30",
+          "end_rva": "0x1d4f4a2",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
+    },
+    "main-account-pass2": {
+      "functions": [
+        {
+          "start_rva": "0x50a80",
+          "end_rva": "0x50b41",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x374620",
+          "end_rva": "0x3746af",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x9911a0",
+          "end_rva": "0x991330",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        },
+        {
+          "start_rva": "0x1e1ead0",
+          "end_rva": "0x1e1ec81",
+          "seed": "Approved phase: focused follow-up from saved caller/string evidence; see phase report"
+        }
+      ]
     }
   }
 }

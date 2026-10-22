@@ -1,0 +1,86 @@
+{
+  "kind": "original_pe_instruction_verification",
+  "source_sha256": "10f8e995453e2da46d4f2b5080cd6da1f13cc5147746adc119ceae38cb039de5",
+  "target_executed": false,
+  "runtime_compatibility_verified": false,
+  "results": [
+    {
+      "file": "main-account-pass1.json",
+      "sha256": "369918cfc342b9d058d24fa8537226bf2510ce2e60a945521e99b731e16ac141",
+      "functions": [
+        {
+          "start_rva": "0x41b250",
+          "end_rva": "0x41b3c0",
+          "instructions_matched": 82,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x36b620",
+          "end_rva": "0x36bab3",
+          "instructions_matched": 274,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "main-account-consumers.json",
+      "sha256": "55c61c24cf72f7f3d36a5955fc232cd8ad339f4241bf56519382019575bfefa8",
+      "functions": [
+        {
+          "start_rva": "0x9137c0",
+          "end_rva": "0x913914",
+          "instructions_matched": 79,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1e1ecf0",
+          "end_rva": "0x1e1eeeb",
+          "instructions_matched": 114,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1d4eb30",
+          "end_rva": "0x1d4f4a2",
+          "instructions_matched": 555,
+          "pseudocode_truncated": false
+        }
+      ]
+    },
+    {
+      "file": "main-account-pass2.json",
+      "sha256": "d95c0235c756e7957acaed45b7702eabd55b5804d5f69b1f023c2c8c5bea617e",
+      "functions": [
+        {
+          "start_rva": "0x50a80",
+          "end_rva": "0x50b41",
+          "instructions_matched": 64,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x374620",
+          "end_rva": "0x3746af",
+          "instructions_matched": 37,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x9911a0",
+          "end_rva": "0x991330",
+          "instructions_matched": 89,
+          "pseudocode_truncated": false
+        },
+        {
+          "start_rva": "0x1e1ead0",
+          "end_rva": "0x1e1ec81",
+          "instructions_matched": 125,
+          "pseudocode_truncated": false
+        }
+      ]
+    }
+  ],
+  "function_count": 9,
+  "instruction_count": 1419,
+  "limitations": [
+    "Byte identity does not prove inferred types, field names, calling conventions, or runtime behavior.",
+    "Individual functions were analyzed with global automatic analysis disabled."
+  ]
+}
