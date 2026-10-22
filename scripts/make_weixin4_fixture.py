@@ -48,6 +48,9 @@ def fixture():
     put(0x8150, "<Q", 0x123456789abcdef0)  # Sort sequence, not the server ID.
     put(0x8164, "<IIII", 5678, 2, 3, 4)
     put(0x8178, "<I", 5)
+    put(0x8638, "<QQQ", 0x8700, 0x8740, 0x8760)
+    text(0x8700, "fixture_user")
+    text(0x8720, "fixture_peer")
     # One synthetic host-auth entry in an eight-bucket native-shaped map.
     host = "fixture.test"
     host_hash = 14695981039346656037
@@ -73,7 +76,8 @@ def fixture():
         "requests": [{"feature": feature, "address": hex(address)} for feature, address in
                      (("login", module), ("contacts", 0x3000), ("send_task", 0x6000),
                       ("send_result", 0x7200), ("receive_batch", 0x7800))] +
-                    [{"feature": "auth_host", "address": hex(module), "host": host}],
+                    [{"feature": "auth_host", "address": hex(module), "host": host},
+                     {"feature": "contact_task", "address": "0x8600"}],
     }
 
 

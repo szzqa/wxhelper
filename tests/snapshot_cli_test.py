@@ -29,7 +29,7 @@ class SnapshotCliTests(unittest.TestCase):
         output = json.loads(result.stdout)
         self.assertFalse(output["runtime_supported"])
         self.assertFalse(output["snapshot_provenance_verified"])
-        login, contacts, task, sent, received, auth = [r["data"] for r in output["results"]]
+        login, contacts, task, sent, received, auth, contact_task = [r["data"] for r in output["results"]]
         self.assertEqual(login["state"], "unknown")
         self.assertEqual(login["kernel_stage_raw"], 1)
         self.assertEqual(login["kernel_phase"], "initialized")
@@ -64,13 +64,16 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(auth["state"], "success_recorded")
         self.assertFalse(auth["global_login_verified"])
         self.assertFalse(auth["connection_verified"])
+        self.assertEqual(contact_task["usernames"], ["fixture_user", "fixture_peer"])
+        self.assertFalse(contact_task["query_executed"])
+        self.assertFalse(contact_task["all_contacts_verified"])
 
     def test_host_authentication_is_scoped_and_missing_is_distinct(self):
         for raw, name in ((0, "unknown"), (1, "idle_or_retryable"),
                           (2, "authenticating"), (3, "success_recorded"),
                           (0xffffffff, "unknown")):
             value = fixture()
-            value["requests"] = [value["requests"][-1]]
+            value["requests"] = [next(r for r in value["requests"] if r["feature"] == "auth_host")]
             memory = bytearray.fromhex(value["segments"][0]["hex"])
             struct.pack_into("<I", memory, 0x9510 - 0x1000, raw)
             value["segments"][0]["hex"] = memory.hex()
@@ -82,7 +85,7 @@ class SnapshotCliTests(unittest.TestCase):
             self.assertEqual(auth["state"], name)
             self.assertFalse(auth["global_login_verified"])
         value = fixture()
-        value["requests"] = [value["requests"][-1]]
+        value["requests"] = [next(r for r in value["requests"] if r["feature"] == "auth_host")]
         value["requests"][0]["host"] = "Fixture.test"
         result = self.run_input(value)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -98,6 +101,23 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertTrue(all(item["error"] == "profile_mismatch" and "data" not in item
                             for item in json.loads(result.stdout)["results"]))
+
+    def test_contact_task_requires_valid_input_even_when_empty(self):
+        value = fixture()
+        value["requests"] = [{"feature": "contact_task", "address": "0x8600"}]
+        memory = bytearray.fromhex(value["segments"][0]["hex"])
+        struct.pack_into("<QQQ", memory, 0x8638 - 0x1000, 0, 0, 0)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        data = json.loads(result.stdout)["results"][0]["data"]
+        self.assertEqual(data["usernames"], [])
+        self.assertFalse(data["all_contacts_verified"])
+        struct.pack_into("<QQQ", memory, 0x8638 - 0x1000, 0x8700, 0x8741, 0x8760)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 2)
+        self.assertNotIn("data", json.loads(result.stdout)["results"][0])
 
     def test_logout_flag_is_not_authentication_state(self):
         for flag in (0, 1, 2, 3):

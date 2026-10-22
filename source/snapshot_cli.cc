@@ -1,4 +1,5 @@
 #include "weixin4/contact_backend.h"
+#include "weixin4/contact_contract.h"
 #include "weixin4/auth_backend.h"
 #include "weixin4/login_backend.h"
 #include "weixin4/message_backend.h"
@@ -122,6 +123,10 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
     status = ReadContactQuerySnapshot(memory, identity, address, value);
     data = {{"query_succeeded", value.query_succeeded}, {"contacts", json::array()}, {"all_contacts_verified", false}};
     for (const auto& c : value.contacts) data["contacts"].push_back(Contact(c));
+  } else if (feature == "contact_task") {
+    ContactStorageTaskRequestSnapshot value;
+    status = ReadContactStorageTaskRequestSnapshot(memory, identity, address, value);
+    data = {{"usernames", value.usernames}, {"query_executed", false}, {"all_contacts_verified", false}};
   } else if (feature == "send_task") {
     TextSendTaskSnapshot value;
     status = ReadTextSendTaskSnapshot(memory, identity, address, value);

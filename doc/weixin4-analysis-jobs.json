@@ -545,6 +545,84 @@
           "seed": "Actual AxAuthLogic constructor called at37136F after shared control allocation188 + object offset10 zero178. ED9FD0 is only leaf business_type setter."
         }
       ]
+    },
+    "contact-native-contract-pass1": {
+      "functions": [
+        {
+          "start_rva": "0x1015900",
+          "end_rva": "0x1015a03",
+          "seed": "Existing contact-disasm-1015900.txt: wrapper reads manager+0x1a8; calls 0x2fabb40 at 0x1015936, 0x1015a70 at 0x1015943, 0x1051c30 at 0x101595f; recover input/output and wait contract, not a callable ABI.",
+          "pdata_record_rva": "0xba5400c",
+          "unwind_info_rva": "0x9f11508"
+        },
+        {
+          "start_rva": "0x2fabb40",
+          "end_rva": "0x2fabdee",
+          "seed": "Existing contact-disasm-2fabb40.txt: copies 32-byte string vector and creates owned closure with worker 0x2fb4520 and destructor 0x2fba880; dispatches via 0x2f9d610 at 0x2fabcc1; establish ownership transfer and error return.",
+          "pdata_record_rva": "0xbbe8760",
+          "unwind_info_rva": "0xa485cdc"
+        },
+        {
+          "start_rva": "0x2f9d610",
+          "end_rva": "0x2f9d6b4",
+          "seed": "Direct call at 0x2fabcc1 in existing contact-disasm-2fabb40.txt; determine queue admission, execution thread and closure ownership, not assumed synchronous.",
+          "pdata_record_rva": "0xbbe7b0c",
+          "unwind_info_rva": "0xa483e24"
+        },
+        {
+          "start_rva": "0x1015a70",
+          "end_rva": "0x1015b9d",
+          "seed": "Direct call at 0x1015943 in existing contact-disasm-1015900.txt; recover result-state wrapper construction and lifetime.",
+          "pdata_record_rva": "0xba54030",
+          "unwind_info_rva": "0x9f11590"
+        },
+        {
+          "start_rva": "0x1051c30",
+          "end_rva": "0x1051d4a",
+          "seed": "Direct call at 0x101595f in existing contact-disasm-1015900.txt before valid byte check at result+0x40; distinguish wait/completion/status extraction and thread requirements.",
+          "pdata_record_rva": "0xba57144",
+          "unwind_info_rva": "0x9f1e1f4"
+        },
+        {
+          "start_rva": "0x2fba880",
+          "end_rva": "0x2fba9ac",
+          "seed": "Existing contact-disasm-2fabb40.txt loads this address at 0x2fabc0c as destructor callback alongside worker 0x2fb4520; recover closure cleanup and outstanding ownership.",
+          "pdata_record_rva": "0xbbe94ec",
+          "unwind_info_rva": "0x9c70c48"
+        }
+      ]
+    },
+    "contact-native-contract-pass2": {
+      "functions": [
+        {
+          "start_rva": "0x39ce60",
+          "end_rva": "0x39cfb5",
+          "seed": "0x1015a70 calls at 0x1015ac9 after retaining result holder: determine wait/get behavior and any required thread context.",
+          "pdata_record_rva": "0xb9b4bbc",
+          "unwind_info_rva": "0x9d18dd0"
+        },
+        {
+          "start_rva": "0x39f570",
+          "end_rva": "0x39f710",
+          "seed": "0x1015a70 calls at 0x1015ad3 after 0x39ce60: retrieve erased result before type comparison; identify completion/error/lifetime.",
+          "pdata_record_rva": "0xb9b4e14",
+          "unwind_info_rva": "0x9d19784"
+        },
+        {
+          "start_rva": "0x2f9d9b0",
+          "end_rva": "0x2f9d9fa",
+          "seed": "0x2f9d610 installs this as the outer task worker; determine inner task invocation, execution context and cleanup.",
+          "pdata_record_rva": "0xbbe7b90",
+          "unwind_info_rva": "0xa483fe0"
+        },
+        {
+          "start_rva": "0x3a5750",
+          "end_rva": "0x3a57d9",
+          "seed": "0x2f9d610 transfers outer task to this dispatch routine; determine queue choice/admission/ownership and any current-thread checks.",
+          "pdata_record_rva": "0xb9b557c",
+          "unwind_info_rva": "0x9d1b03c"
+        }
+      ]
     }
   }
 }
