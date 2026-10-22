@@ -220,7 +220,6 @@ INT64 Manager::GetSelfInfo(common::SelfInfoInner &out) {
 
 
 INT64 Manager::SendTextMsg(const std::wstring& wxid, const std::wstring& msg){
-  INT64 success = -1;
   prototype::WeChatString to_user(wxid);
   prototype::WeChatString text_msg(msg);
   UINT64 send_message_mgr_addr = base_addr_ + offset::kGetSendMessageMgr;
@@ -239,13 +238,12 @@ INT64 Manager::SendTextMsg(const std::wstring& wxid, const std::wstring& msg){
        reinterpret_cast<UINT64>(&text_msg), reinterpret_cast<UINT64>(&temp), 1,
        1, 0, 0);
   free(reinterpret_cast<UINT64>(&chat_msg));
-  success = 1;
-
-  return success;
+  // Compatibility code: the native call returned. Its return ABI and message
+  // delivery status are not verified, so this is not a delivery result.
+  return 1;
 }
 
 INT64 Manager::SendImageMsg(const std::wstring& wxid, const std::wstring& image_path){
-  INT64 success = -1;
   prototype::WeChatString to_user(wxid);
   prototype::WeChatString image_full_path(image_path);
   UINT64 send_message_mgr_addr = base_addr_ + offset::kGetSendMessageMgr;
@@ -277,13 +275,13 @@ INT64 Manager::SendImageMsg(const std::wstring& wxid, const std::wstring& image_
            reinterpret_cast<UINT64>(&flag));
   free(p_chat_msg);
   free(p_chat_msg_temp);
-  success = 1;
-  return success;
+  // Keep the historical submission code; do not interpret native return data
+  // as acceptance or successful delivery without an established ABI.
+  return 1;
 }
 
 
 INT64 Manager::SendFileMsg(const std::wstring& wxid, const std::wstring& file_path){
-  INT64 success = -1;
   prototype::WeChatString* to_user= (prototype::WeChatString*)HeapAlloc(GetProcessHeap(),0,sizeof(prototype::WeChatString));
   wchar_t * ptr_wxid = (wchar_t*)HeapAlloc(GetProcessHeap(),0,(wxid.length()+1)*2);
   wmemcpy(ptr_wxid,wxid.c_str(),wxid.length()+1);
@@ -336,8 +334,8 @@ INT64 Manager::SendFileMsg(const std::wstring& wxid, const std::wstring& file_pa
   HeapFree(GetProcessHeap(),0,temp2);
   HeapFree(GetProcessHeap(),0,temp3);
   HeapFree(GetProcessHeap(),0,temp4);
-  success = 1;
-  return success;
+  // The wrapper returned after submission; eventual delivery is unverified.
+  return 1;
 
 }
 

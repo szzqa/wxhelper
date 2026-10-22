@@ -13,9 +13,9 @@ if(TARGET wxhelper)
   set_tests_properties(reject_current_client PROPERTIES TIMEOUT 10)
   add_executable(startup_lifetime_test startup_lifetime_test.cc)
   target_compile_definitions(startup_lifetime_test PRIVATE NOMINMAX)
-  target_link_libraries(startup_lifetime_test PRIVATE ws2_32)
+  target_link_libraries(startup_lifetime_test PRIVATE ws2_32 nlohmann_json::nlohmann_json)
   add_test(NAME startup_lifetime COMMAND startup_lifetime_test
     "$<TARGET_FILE:legacy_fixture>" "$<TARGET_FILE:wxhelper>"
     "${CMAKE_BINARY_DIR}/startup-artifacts")
-  set_tests_properties(startup_lifetime PROPERTIES TIMEOUT 15)
+  set_tests_properties(startup_lifetime PROPERTIES TIMEOUT 30)
 endif()

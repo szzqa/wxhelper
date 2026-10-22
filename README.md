@@ -12,9 +12,11 @@ wechat hook，PC 端微信逆向学习。
 - 新增 `wxhelper_probe.exe <客户端 DLL 完整路径>`，只读检查架构、模块名及文件版本；退出码 `0` 为命中旧版本配置、`2` 为不支持。
 - DLL 会在启动服务和调用旧偏移前拒绝未知版本。不要直接将 `WeChatWin.dll` 改成 `Weixin.dll` 绕过检查。
 - HTTP 默认仅监听 `127.0.0.1:19088`。服务启动在加载锁之外完成；加载成功不等于 API 已就绪。
-- 成功加载到受支持客户端后，DLL 固定到进程生命周期。停止 helper 需要正常退出微信；不支持动态卸载。
+- 成功加载到受支持客户端后，DLL 固定到进程生命周期。`POST /api/stop` 可关闭监听、回调及 HTTP 服务；完整移除 DLL 仍需正常退出微信，不支持动态卸载。
 - 注入器已删除不适用 x64 的 `-P` 机器码路径，该参数会明确报错。端口使用 `%LOCALAPPDATA%\wxhelper\config.ini` 的 `[config] Port=19088`；日志在同目录 `logs\wxhelper-<PID>.log`，按大小轮转。可在启动宿主前设置进程环境变量 `WXHELPER_DATA_DIR` 为绝对路径覆盖根目录，不再依赖启动时的工作目录。
 - 仓库 `tool/` 内历史预编译文件没有更新，验证和使用应采用本地重新构建的产物。
+
+启动配置、注入计划、停止/移除方法和接口请求示例见 [后台操作说明](doc/runtime-operation.md)。新增 `GET /api/health` 和 `GET /api/capabilities`；4.x 在线能力仍为禁用状态。
 
 只构建诊断和注入工具（不需要第三方 C++ 库）：
 

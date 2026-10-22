@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <nlohmann/json.hpp>
 
 namespace {
 using Clock = std::chrono::steady_clock;
@@ -77,10 +78,7 @@ bool WaitSocket(SOCKET socket, bool writing, Clock::time_point deadline) {
                 nullptr, &timeout) > 0;
 }
 
-bool HttpReady(unsigned short port, Clock::time_point overall_deadline) {
-  const auto deadline = (std::min)(overall_deadline,
-                                  Clock::now() + std::chrono::milliseconds(250));
-  Socket client;
+bool ConnectLoopback(Socket& client, unsigned short port, Clock::time_point deadline) {
   if (client.get() == INVALID_SOCKET) return false;
   u_long nonblocking = 1;
   if (ioctlsocket(client.get(), FIONBIO, &nonblocking) == SOCKET_ERROR) return false;
@@ -96,11 +94,23 @@ bool HttpReady(unsigned short port, Clock::time_point overall_deadline) {
                    reinterpret_cast<char*>(&connection_error), &size) == SOCKET_ERROR ||
         connection_error != 0) return false;
   }
+  return true;
+}
 
-  // GET takes the generic unsupported-method branch, before any business API
-  // or fixture-relative offset can be called.
-  const std::string request =
-      "GET /api/checkLogin HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n";
+struct Response {
+  int status = 0;
+  nlohmann::json body;
+};
+
+bool Request(unsigned short port, const std::string& method, const std::string& path,
+             const std::string& body, Clock::time_point deadline, Response& output) {
+  output = {};
+  Socket client;
+  if (!ConnectLoopback(client, port, deadline)) return false;
+  const std::string request = method + " " + path +
+      " HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n"
+      "Content-Type: application/json\r\nContent-Length: " +
+      std::to_string(body.size()) + "\r\n\r\n" + body;
   size_t sent = 0;
   while (sent < request.size()) {
     if (!WaitSocket(client.get(), true, deadline)) return false;
@@ -111,17 +121,52 @@ bool HttpReady(unsigned short port, Clock::time_point overall_deadline) {
     sent += static_cast<size_t>(count);
   }
   std::string response;
-  while (response.size() < 8192) {
+  while (response.size() < 65536) {
     if (!WaitSocket(client.get(), false, deadline)) return false;
     char buffer[1024];
     const int count = recv(client.get(), buffer, sizeof(buffer), 0);
     if (count == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK) continue;
     if (count <= 0) return false;
     response.append(buffer, count);
-    if (response.find("HTTP/1.1 200") == 0 &&
-        response.find("not support get method,use post.") != std::string::npos) return true;
+    const auto headers_end = response.find("\r\n\r\n");
+    if (headers_end == std::string::npos) continue;
+    const auto length_field = response.find("\r\nContent-Length:");
+    if (length_field == std::string::npos || length_field > headers_end)
+      throw std::runtime_error("Fixture response must declare Content-Length.");
+    const auto length = std::stoull(response.substr(length_field + 17));
+    if (length > 65536) throw std::runtime_error("Fixture response exceeds its size limit.");
+    const auto body_start = headers_end + 4;
+    if (response.size() < body_start + length) continue;
+    if (response.compare(0, 9, "HTTP/1.1 ") != 0)
+      throw std::runtime_error("Unexpected HTTP response protocol.");
+    output.status = std::stoi(response.substr(9, 3));
+    output.body = nlohmann::json::parse(response.substr(body_start, static_cast<size_t>(length)));
+    return true;
   }
   return false;
+}
+
+Response RequireResponse(unsigned short port, const std::string& method,
+                         const std::string& path, const std::string& body, int status) {
+  Response response;
+  if (!Request(port, method, path, body, Clock::now() + std::chrono::seconds(2), response))
+    throw std::runtime_error("Incomplete response from " + method + " " + path);
+  if (response.status != status)
+    throw std::runtime_error(method + " " + path + " expected HTTP " + std::to_string(status) +
+                             ", got " + std::to_string(response.status) + ": " + response.body.dump());
+  return response;
+}
+
+bool IsReady(unsigned short port, Clock::time_point deadline) {
+  Response response;
+  return Request(port, "GET", "/api/health", "", deadline, response) &&
+      response.status == 200 && response.body.at("data").at("ready") == true &&
+      response.body.at("data").at("state") == "ready";
+}
+
+bool PortListening(unsigned short port, Clock::time_point deadline) {
+  Socket client;
+  return ConnectLoopback(client, port, deadline);
 }
 
 int Run(int argc, wchar_t** argv) {
@@ -191,18 +236,60 @@ int Run(int argc, wchar_t** argv) {
   const auto deadline = Clock::now() + std::chrono::seconds(5);
   bool ready = false;
   while (Clock::now() < deadline) {
-    if (HttpReady(port, deadline)) {
+    if (IsReady(port, (std::min)(deadline, Clock::now() + std::chrono::milliseconds(250)))) {
       ready = true;
       break;
     }
     if (Clock::now() < deadline) Sleep(10);
   }
-  if (!ready) return Fail(7, "Helper did not return the generic GET response within five seconds.");
+  if (!ready) return Fail(7, "Helper did not report ready through /api/health within five seconds.");
+  const auto health = RequireResponse(port, "GET", "/api/health", "", 200);
+  if (health.body.at("data").at("dllPinned") != true ||
+      health.body.at("data").at("dynamicUnload") != false)
+    return Fail(11, "Health reported incorrect module lifetime capabilities.");
+  const auto capabilities = RequireResponse(port, "GET", "/api/capabilities", "", 200);
+  if (capabilities.body.at("data").at("weixin4Runtime") != false ||
+      capabilities.body.at("data").at("deliveryConfirmation") != false)
+    return Fail(12, "Capabilities advertised unimplemented runtime/delivery support.");
+
+  // These inputs must be rejected BEFORE business dispatch. The inert fixture
+  // has no valid WeChat function offsets. Never send a valid business request.
+  RequireResponse(port, "GET", "/api/checkLogin", "", 405);
+  RequireResponse(port, "POST", "/api/no-such-fixture-route", "{}", 404);
+  RequireResponse(port, "POST", "/api/sendTextMsg", R"({"wxid":"fixture-only"})", 400);
+  RequireResponse(port, "POST", "/api/topMsg", R"({"msgId":"18446744073709551616"})", 400);
+  RequireResponse(port, "POST", "/api/hookSyncMsg",
+                  R"({"ip":"127.0.0.1","port":2147483648,"enableHttp":0})", 400);
+  RequireResponse(port, "POST", "/api/test", "{}", 501);
+  RequireResponse(port, "GET", "/api/stop", "", 405);
+  RequireResponse(port, "POST", "/api/stop", "{", 400);
+  RequireResponse(port, "POST", "/api/stop", "[]", 400);
+  if (!IsReady(port, Clock::now() + std::chrono::seconds(2)))
+    return Fail(13, "Invalid requests changed readiness or stopped the helper.");
   if (!FreeLibrary(helper)) return Fail(8, "FreeLibrary(helper) failed.", GetLastError());
   if (GetModuleHandleW(helper_path.filename().c_str()) != helper) {
     return Fail(9, "Helper was not pinned after successful initialization.");
   }
-  std::cout << "PASS: isolated HTTP startup and module pin; exiting normally to exercise CRT teardown."
+  // Stop is a control-only operation: there are no installed hooks or real
+  // messages in this process. Its complete 202 JSON must arrive before closure.
+  const auto stop_deadline = Clock::now() + std::chrono::seconds(5);
+  const auto stopped = RequireResponse(port, "POST", "/api/stop", "{}", 202);
+  if (stopped.body.at("data").at("state") != "stopping" ||
+      stopped.body.at("data").at("dllPinned") != true)
+    return Fail(14, "Stop acknowledgement was incomplete or incorrect.");
+  bool closed = false;
+  while (Clock::now() < stop_deadline) {
+    if (!PortListening(port, (std::min)(stop_deadline,
+                       Clock::now() + std::chrono::milliseconds(200)))) {
+      closed = true;
+      break;
+    }
+    Sleep(10);
+  }
+  if (!closed) return Fail(15, "HTTP listener remained active five seconds after stop.");
+  if (GetModuleHandleW(helper_path.filename().c_str()) != helper)
+    return Fail(16, "Stopping the service unexpectedly removed the pinned DLL.");
+  std::cout << "PASS: real loopback health/capabilities, rejected business inputs, complete stop reply, closed listener and retained module pin."
             << std::endl;
   // Do not terminate the host: CTest's timeout must expose a teardown deadlock.
   return 0;

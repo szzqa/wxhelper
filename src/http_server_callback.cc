@@ -5,52 +5,30 @@
 #include "global_context.h"
 #include "hooks.h"
 #include "db.h"
+#include "api_validation.h"
+#include "service_control.h"
 
 
-#define STR2ULL(str) (wxhelper::Utils::IsDigit(str) ? stoull(str) : 0)
-#define STR2LL(str) (wxhelper::Utils::IsDigit(str) ? stoll(str) : 0)
-#define STR2I(str) (wxhelper::Utils::IsDigit(str) ? stoi(str) : 0)
 namespace common = wxhelper::common;
+namespace api = wxhelper::api;
 
-int GetIntParam(nlohmann::json data, std::string key) {
-  int result;
-  try {
-    result = data[key].get<int>();
-  } catch (nlohmann::json::exception) {
-    result = STR2I(data[key].get<std::string>());
-  }
-  return result;
+int GetIntParam(const nlohmann::json& data, const std::string& key) {
+  return api::GetInt(data, key);
 }
 
-INT64 GetINT64Param(nlohmann::json data, std::string key) {
-  INT64 result;
-  try {
-    result = data[key].get<INT64>();
-  } catch (nlohmann::json::exception) {
-    result = STR2LL(data[key].get<std::string>());
-  }
-  return result;
+UINT64 GetUINT64Param(const nlohmann::json& data, const std::string& key) {
+  return api::GetUint64(data, key);
 }
 
-INT64 GetUINT64Param(nlohmann::json data, std::string key) {
-  UINT64 result;
-  try {
-    result = data[key].get<UINT64>();
-  } catch (nlohmann::json::exception) {
-    result = STR2ULL(data[key].get<std::string>());
-  }
-  return result;
+std::string GetStringParam(const nlohmann::json& data, const std::string& key) {
+  return api::GetString(data, key);
 }
 
-std::string GetStringParam(nlohmann::json data, std::string key) {
-  return data[key].get<std::string>();
+std::wstring GetWStringParam(const nlohmann::json& data, const std::string& key) {
+  return wxhelper::Utils::UTF8ToWstring(api::GetString(data, key));
 }
 
-std::wstring GetWStringParam(nlohmann::json data, std::string key) {
-  return wxhelper::Utils::UTF8ToWstring(data[key].get<std::string>());
-}
-
-std::vector<std::wstring> GetArrayParam(nlohmann::json data,  std::string key) {
+std::vector<std::wstring> GetArrayParam(const nlohmann::json& data, const std::string& key) {
   std::vector<std::wstring> result;
   std::wstring param = GetWStringParam(data, key);
   result = wxhelper::Utils::split(param, L',');
@@ -68,19 +46,18 @@ DWORD WINAPI StartHttpServer(LPVOID context) {
 
 void EventHandler(struct mg_connection *c, int ev, void *ev_data,
                   void *fn_data) {
+  HandleControlEvent(c, ev);
   if (ev == MG_EV_OPEN) {
   } else if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *)ev_data;
+    if (HandleControlRequest(c, hm)) return;
     if (mg_http_match_uri(hm, "/websocket")) {
       mg_ws_upgrade(c, hm, NULL);
     } else if (mg_http_match_uri(hm, "/api/*")) {
       HandleHttpRequest(c, hm);
     } else {
-      nlohmann::json res = {{"code", 400},
-                            {"msg", "invalid url, please check url"},
-                            {"data", NULL}};
-      std::string ret = res.dump();
-      mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s\n",
+      const auto ret = api::ErrorBody(404, "not_found", "route not found");
+      mg_http_reply(c, 404, "Content-Type: application/json\r\n", "%s\n",
                     ret.c_str());
     }
   } else if (ev == MG_EV_WS_MSG) {
@@ -91,17 +68,11 @@ void EventHandler(struct mg_connection *c, int ev, void *ev_data,
 
 void HandleHttpRequest(struct mg_connection *c, void *ev_data) {
   struct mg_http_message *hm = (struct mg_http_message *)ev_data;
-  std::string ret = R"({"code":200,"msg":"success"})";
-  try {
-    ret = HttpDispatch(c, hm);
-  } catch (nlohmann::json::exception &e) {
-    nlohmann::json res = {{"code", "500"}, {"msg", e.what()}, {"data", NULL}};
-    ret = res.dump();
-  }
-  if (ret != "") {
-    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s\n",
-                  ret.c_str());
-  }
+  const auto response = api::ExecuteSafely([&] { return HttpDispatch(c, hm); });
+  const char* headers = response.status == 405
+      ? "Content-Type: application/json\r\nAllow: POST\r\n"
+      : "Content-Type: application/json\r\n";
+  mg_http_reply(c, response.status, headers, "%s\n", response.body.c_str());
 }
 
 void HandleWebsocketRequest(struct mg_connection *c, void *ev_data) {
@@ -111,29 +82,16 @@ void HandleWebsocketRequest(struct mg_connection *c, void *ev_data) {
 }
 
 std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
+  (void)c;
   std::string ret;
-  if (mg_vcasecmp(&hm->method, "GET") == 0) {
-    nlohmann::json ret_data = {{"code", 200},
-                               {"data", {}},
-                               {"msg", "not support get method,use post."}};
-    ret = ret_data.dump();
-    return ret;
-  }
-
-  nlohmann::json j_param = nlohmann::json::parse(
-      hm->body.ptr, hm->body.ptr + hm->body.len, nullptr, false);
-  if (hm->body.len != 0 && j_param.is_discarded() == true) {
-    nlohmann::json ret_data = {
-        {"code", 200}, {"data", {}}, {"msg", "json string is invalid."}};
-    ret = ret_data.dump();
-    return ret;
-  }
+  const auto j_param = api::ValidateRequest(
+      std::string_view(hm->method.ptr, hm->method.len),
+      std::string_view(hm->uri.ptr, hm->uri.len),
+      hm->body.len ? std::string_view(hm->body.ptr, hm->body.len) : std::string_view{});
   if (wxhelper::GlobalContext::GetInstance().state !=
-      wxhelper::GlobalContextState::INITIALIZED) {
-    nlohmann::json ret_data = {
-        {"code", 200}, {"data", {}}, {"msg", "global context is initializing"}};
-    ret = ret_data.dump();
-    return ret;
+          wxhelper::GlobalContextState::INITIALIZED ||
+      wxhelper::GlobalContext::GetInstance().mgr == nullptr) {
+    throw api::Error(503, "backend_unavailable", "native backend is not ready");
   }
   if (mg_http_match_uri(hm, "/api/checkLogin")) {
     INT64 success = wxhelper::GlobalContext::GetInstance().mgr->CheckLogin();
@@ -171,8 +129,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     std::wstring msg = GetWStringParam(j_param, "msg");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->SendTextMsg(wxid, msg);
-    nlohmann::json ret_data = {
-        {"code", success}, {"data", {}}, {"msg", "success"}};
+    const auto ret_data = api::SubmissionResponse(success);
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/hookSyncMsg")) {
@@ -196,8 +153,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     std::wstring path = GetWStringParam(j_param, "imagePath");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->SendImageMsg(wxid, path);
-    nlohmann::json ret_data = {
-        {"code", success}, {"data", {}}, {"msg", "success"}};
+    const auto ret_data = api::SubmissionResponse(success);
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/sendFileMsg")) {
@@ -205,8 +161,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     std::wstring path = GetWStringParam(j_param, "filePath");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->SendFileMsg(wxid, path);
-    nlohmann::json ret_data = {
-        {"code", success}, {"data", {}}, {"msg", "success"}};
+    const auto ret_data = api::SubmissionResponse(success);
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/getContactList")) {
@@ -263,7 +218,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/execSql")) {
-    UINT64 db_handle = GetINT64Param(j_param, "dbHandle");
+    UINT64 db_handle = GetUINT64Param(j_param, "dbHandle");
     std::string sql = GetStringParam(j_param, "sql");
     std::vector<std::vector<std::string>> items;
     int success =
@@ -363,7 +318,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/topMsg")) {
-    INT64 msg_id = GetINT64Param(j_param, "msgId");
+    UINT64 msg_id = GetUINT64Param(j_param, "msgId");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->SetTopMsg(msg_id);
     nlohmann::json ret_data = {
@@ -372,7 +327,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     return ret;
   } else if (mg_http_match_uri(hm, "/api/removeTopMsg")) {
     std::wstring room_id = GetWStringParam(j_param, "chatRoomId");
-    INT64 msg_id = GetINT64Param(j_param, "msgId");
+    UINT64 msg_id = GetUINT64Param(j_param, "msgId");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->RemoveTopMsg(room_id,msg_id);
     nlohmann::json ret_data = {
@@ -418,7 +373,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
     ret = ret_data.dump();
     return ret;
   } else if (mg_http_match_uri(hm, "/api/forwardMsg")) {
-    INT64 msg_id = GetINT64Param(j_param, "msgId");
+    UINT64 msg_id = GetUINT64Param(j_param, "msgId");
     std::wstring wxid = GetWStringParam(j_param, "wxid");
     INT64 success =
         wxhelper::GlobalContext::GetInstance().mgr->ForwardMsg(msg_id,wxid);
@@ -587,20 +542,7 @@ std::string HttpDispatch(struct mg_connection *c, struct mg_http_message *hm) {
         {"code", success}, {"msg", "success"}, {"data", text}};
     ret = ret_data.dump();
     return ret;
- } else if (mg_http_match_uri(hm, "/api/test")) {
-    INT64 success = wxhelper::GlobalContext::GetInstance().mgr->Test();
-    nlohmann::json ret_data = {
-        {"code", success}, {"msg", "success"}, {"data", {}}};
-    ret = ret_data.dump();
-    return ret;
  } else {
-    nlohmann::json ret_data = {
-        {"code", 200}, {"data", {}}, {"msg", "not support url"}};
-    ret = ret_data.dump();
-    return ret;
+    throw api::Error(404, "not_found", "API route not found");
  }
- nlohmann::json ret_data = {
-     {"code", 200}, {"data", {}}, {"msg", "unreachable code."}};
- ret = ret_data.dump();
- return ret;
 }

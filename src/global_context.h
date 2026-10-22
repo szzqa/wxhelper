@@ -6,10 +6,12 @@
 #include "singleton.h"
 #include "manager.h"
 #include <atomic>
+#include <mutex>
 
 namespace wxhelper {
 
-enum class GlobalContextState { NOT_INITIALIZED, INITIALIZING, INITIALIZED, FAILED };
+enum class GlobalContextState { NOT_INITIALIZED, INITIALIZING, INITIALIZED, FAILED,
+                                STOPPING, STOPPED, STOP_FAILED };
 
 class GlobalContext : public Singleton<GlobalContext> {
   friend class Singleton<GlobalContext>;
@@ -21,6 +23,10 @@ class GlobalContext : public Singleton<GlobalContext> {
   static GlobalContext& GetInstance();
   void initialize(HMODULE module);
   void finally();
+  nlohmann::json Health();
+  nlohmann::json Capabilities();
+  bool PrepareStop();
+  void FinishStopAsync();
 
  public:
   std::optional<Config> config;
@@ -31,7 +37,12 @@ class GlobalContext : public Singleton<GlobalContext> {
   std::atomic<GlobalContextState> state{GlobalContextState::NOT_INITIALIZED};
 
  private:
-  HMODULE module_;
+  void RecordFailure(const std::string& error, GlobalContextState failed_state);
+  HMODULE module_ = nullptr;
+  std::mutex status_mutex_;
+  std::mutex stop_mutex_;
+  std::string client_version_, config_path_, log_path_, error_;
+  std::atomic<bool> stop_worker_started_{false};
 };
 
 }  // namespace wxhelper
