@@ -339,6 +339,30 @@
           "start_rva": "0x3896fe0"
         }
       ]
+    },
+    "login-semantic-pass5": {
+      "functions": [
+        {
+          "start_rva": "0x36b2a0",
+          "end_rva": "0x36b3f4",
+          "seed": "Called before CoBeforeWillLogout flow; investigate atomic flag39 write"
+        },
+        {
+          "start_rva": "0x36b620",
+          "end_rva": "0x36bab3",
+          "seed": "Called by CoBeforeWillLogout flow after interrupt stage"
+        },
+        {
+          "start_rva": "0x3bad60",
+          "end_rva": "0x3bb64b",
+          "seed": "LoginManager Quit continuation; establish logout transition chain"
+        },
+        {
+          "start_rva": "0x53160",
+          "end_rva": "0x5341f",
+          "seed": "Root context method invoked before WaitForLastLogout during Quit"
+        }
+      ]
     }
   }
 }

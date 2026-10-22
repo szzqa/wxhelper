@@ -102,6 +102,7 @@ json Decode(const Snapshot& memory, const BinaryIdentity& identity, const json& 
             {"service_address", value.service_address}, {"has_service_flags", value.has_service_flags},
             {"service_flag38", value.service_flag38}, {"service_flag39", value.service_flag39},
             {"service_slot0_value", value.service_slot0_value}, {"account_lookup_key", value.account_lookup_key}};
+    data["logout_started"] = value.logout_started.has_value() ? json(*value.logout_started) : json(nullptr);
   } else if (feature == "contacts") {
     ContactQuerySnapshot value;
     status = ReadContactQuerySnapshot(memory, identity, address, value);

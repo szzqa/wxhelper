@@ -68,6 +68,7 @@ void CheckCleared(const LoginObservation& value) {
   CHECK(value.service_control_address == 0 && value.account_lookup_key.empty());
   CHECK(value.service_flag38 == 0 && value.service_flag39 == 0);
   CHECK(!value.service_slot0_value && !value.service_field39_low_bit);
+  CHECK(!value.logout_started.has_value());
 }
 }  // namespace
 
@@ -80,6 +81,7 @@ int main() {
   CHECK(output.service_control_address == kControl);
   CHECK(output.account_lookup_key == "fixture-account");
   CHECK(output.service_slot0_value && !output.service_field39_low_bit);
+  CHECK(output.logout_started.has_value() && !*output.logout_started);
   CHECK(output.state == LoginState::Unknown);
 
   // Flag getters mask the low bit; neither flag nor an account key establishes login.
@@ -89,8 +91,18 @@ int main() {
     CHECK(output.service_flag38 == flags && output.service_flag39 == flags);
     CHECK(output.service_slot0_value == ((flags & 1) != 0));
     CHECK(output.service_field39_low_bit == ((flags & 1) != 0));
+    CHECK(output.logout_started.has_value());
+    CHECK(*output.logout_started == ((flags & 1) != 0));
     CHECK(output.state == LoginState::Unknown);
   }
+
+  // Logout initiation preserves the account key and active-context byte, but
+  // cannot establish that authentication is absent or that logout completed.
+  memory = Fixture(1, 1);
+  CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
+  CHECK(output.logout_started == true);
+  CHECK(output.service_slot0_value && !output.account_lookup_key.empty());
+  CHECK(output.state == LoginState::Unknown);
 
   memory = Fixture();
   const std::string long_key = "offline-long-account-fixture";
@@ -116,6 +128,7 @@ int main() {
   CHECK(ReadLoginObservation(memory, kIdentity, kBase, output) == ReadError::None);
   CHECK(output.context_present && !output.service_present && !output.has_service_flags);
   CHECK(output.service_control_address == kControl && output.state == LoginState::Unknown);
+  CHECK(!output.logout_started.has_value());
 
   memory = Fixture();
   auto wrong = kIdentity;

@@ -3,6 +3,7 @@ import copy
 import json
 from pathlib import Path
 import subprocess
+import struct
 import sys
 import tempfile
 import unittest
@@ -30,6 +31,7 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertFalse(output["snapshot_provenance_verified"])
         login, contacts, task, sent, received = [r["data"] for r in output["results"]]
         self.assertEqual(login["state"], "unknown")
+        self.assertIs(login["logout_started"], False)
         self.assertEqual(login["account_lookup_key"], "fixture_user")
         self.assertEqual(contacts["contacts"][0]["nick_name"], "测试昵称")
         self.assertEqual(task["call_id"], "fixture_call")
@@ -46,6 +48,27 @@ class SnapshotCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertTrue(all(item["error"] == "profile_mismatch" and "data" not in item
                             for item in json.loads(result.stdout)["results"]))
+
+    def test_logout_flag_is_not_authentication_state(self):
+        for flag in (0, 1, 2, 3):
+            value = fixture()
+            memory = bytearray.fromhex(value["segments"][0]["hex"])
+            memory[0x2039 - 0x1000] = flag
+            value["segments"][0]["hex"] = memory.hex()
+            result = self.run_input(value)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            login = json.loads(result.stdout)["results"][0]["data"]
+            self.assertIs(login["logout_started"], bool(flag & 1))
+            self.assertEqual(login["state"], "unknown")
+        value = fixture()
+        memory = bytearray.fromhex(value["segments"][0]["hex"])
+        struct.pack_into("<QQ", memory, 0x1068 - 0x1000, 0, 0)
+        value["segments"][0]["hex"] = memory.hex()
+        result = self.run_input(value)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        login = json.loads(result.stdout)["results"][0]["data"]
+        self.assertIsNone(login["logout_started"])
+        self.assertEqual(login["state"], "unknown")
 
     def test_overlapping_segments_are_rejected(self):
         value = fixture()

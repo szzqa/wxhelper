@@ -2,7 +2,7 @@
 
 实现入口是 `src/weixin4/login_backend.h` 的 `ReadLoginObservation`。它从调用方提供的稳定快照读取根上下文、服务共享指针、两个标志字节及账号查询键，校验两个对象的虚表，并返回独立 DTO。它不打开进程、不注入、不调用微信内部函数，也不修改共享指针引用计数。
 
-本轮恢复的是登录服务的**对象布局和静态读取链**。`LoginObservation::state` 始终为 `Unknown`：目前的静态证据没有完整证明这些标志与认证成功、离线重连、主动退出之间的对应关系。账号查询键非空和服务存在均不能替代登录状态。
+已恢复登录服务的**对象布局、静态读取链和登出启动标志**。`LoginObservation::logout_started` 观察退出流程是否已经启动；`state` 始终为 `Unknown`，因为静态证据仍没有完整证明认证成功、离线重连或退出完成。账号查询键非空和服务存在均不能替代登录状态。
 
 ## 二进制约束
 
@@ -21,7 +21,7 @@
 | 根 `+0x68 / +0x70` | `0x469A0` 复制双指针并增加控制块引用计数 | 只读服务指针与控制块地址 |
 | 服务虚表 `0x8DFE2F8` | 构造器 `0x365BF0` 写入；工厂 `0x65F60` 创建共享对象 | 拒绝错误服务布局 |
 | 服务 `+0x38` | 虚表 slot `+0` 为 `0x373DC0`，读取 `byte & 1`；根 `0x4FFD0` 委托该 slot | 原始字节、getter 对应最低位 |
-| 服务 `+0x39` | `0x4FFF0` 读取该字节并 `& 1`；服务为空时内部包装函数返回 true | 原始字节及最低位，不赋予登录含义 |
+| 服务 `+0x39` | `0x3BADBB` 以 XCHG 置 1；`0x4FFF0` 读取并 `& 1`；自动认证消费者据此取消请求 | 原始字节、最低位及 `logout_started`；不表示已退出完成 |
 | 服务 `+0x48` | 虚表 slot `+0x18` 为 `0x36F930`，返回该地址；根 `0x4F3C0` 委托该 slot | 窄字符串 `account_lookup_key` |
 
 账号查询键的命名来自消费链：`0x5456D70` 的账号信息 handler 通过上述虚函数拿到字符串，检查长度，并传给 `0x100A690` 的账号记录查询。后端不会把它转换为登录判断。
@@ -32,9 +32,9 @@
 
 `0x365BF0` 先将 `+0x38 / +0x39` 清零，然后在构造流程中把 `+0x38` 置 1。`0x36CBC0` 在一系列异步操作及 `0x36DD30` 清理之后把 `+0x38` 置 0。它确实表示一个服务生命周期状态，但“构造完成”不等于认证成功；目前没有给出完整的认证/重连状态机。
 
-`0x3BBD60` 引用明文 `login_manager.cc`，调用 `0x4FFD0` 后测试 AL。`0x41B250` 和 `0x4BC2F0` 消费 `0x4FFF0` 的返回值控制动作，并读写另一个根字段 `+0x348`。这些调用验证了布尔使用方式，但其日志文本使用编码常量，当前还不能唯一确定 `+0x39` 是退出中、暂停中还是其他条件。
+后续静态复核对编码日志作了已知明文交叉验证，详见 `weixin4-login-static-followup.md`。`0x3BBD60` 的方法名还原为 `LoginManager::Quit`，调用 `0x3BAD60`；后者通过 `0x47220` 获取同一服务 shared_ptr，并在 `0x3BADBB` 执行 `XCHG CL,[RAX+0x39]`，前一条将 CL 置 1。消费者 `0x4BC2F0` 在 `0x4FFF0` 为 true 时进入 `cancel autoauth. is start logout` 日志分支。因此可把服务 `+0x39` 的最低位作为 `logout_started` 观察值，而不能把它反转后当作已登录。
 
-因此 DTO 保留原始字节和最低位，`state` 不随这两个值或字符串改变。根或服务为空时，返回成功的“对象不存在”观察值，认证状态仍为 `Unknown`。不能将此模块直接替换旧 `AccountService + 0x7F8` 的 `CheckLogin` 实现。
+DTO 保留原始字节和最低位，另提供 `std::optional<bool> logout_started`。只在实际服务对象存在并解码成功时提供 true/false；根或服务为空、解码失败时没有值，不复制内部 getter 的“服务不存在则返回 true”分支。`state` 不随这两个值或字符串改变，不能将此模块直接替换旧 `AccountService + 0x7F8` 的 `CheckLogin` 实现。
 
 ## API 与错误处理
 
@@ -59,6 +59,7 @@ ReadError ReadLoginObservation(const MemoryReader& snapshot,
 - `context-pass1.json`、`context-pass2.json`：根对象与原始 getter。
 - `account-pass1.json`、`account-handler-review.json`：账号查询链。
 - `login-migration-pass1.json` 至 `login-migration-pass4.json`：四轮有界 IDA 反编译。
+- `login-semantic-pass5.json`：退出链和服务 `+0x39` 的写入；`login-contact-log-review.json`：编码日志的有界交叉验证。
 - `login-service-vtable-candidates.json`：候选虚表表项；其中使用的关键 leaf 已由第三轮 IDA 验证。
 - `login-state-wrapper-call-validation.json`：从原始 `.pdata` 函数起点进行的 dumpbin 调用点验证。
 

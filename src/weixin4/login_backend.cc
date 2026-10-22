@@ -66,6 +66,9 @@ ReadError ReadLoginObservation(const MemoryReader& memory,
   observation.service_flag39 = flags[1];
   observation.service_slot0_value = (flags[0] & 1) != 0;
   observation.service_field39_low_bit = (flags[1] & 1) != 0;
+  // Writer RVA 0x3badbb (XCHG byte +0x39, 1) and consumer 0x4bc2f0
+  // establish logout initiation, independently of authentication completion.
+  observation.logout_started = observation.service_field39_low_bit;
   observation.has_service_flags = true;
 
   if (!CheckedAdd(observation.service_address, login_layout::kAccountLookupKeyOffset,
